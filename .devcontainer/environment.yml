@@ -1,0 +1,7 @@
+name: fastqrepair_env
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - nf-core=2.14.1
