@@ -96,6 +96,11 @@ workflow PIPELINE_INITIALISATION {
         }
         .set { ch_samplesheet }
 
+    //
+    // Check that any fastq file is not analyzed multiple times
+    //
+    validateInputSamplesheet2(ch_samplesheet)
+
     emit:
     samplesheet = ch_samplesheet
     versions    = ch_versions
@@ -161,6 +166,20 @@ def validateInputSamplesheet(input) {
     }
 
     return [ metas[0], fastqs ]
+}
+
+//
+// Same fastq files are not allowed to be analyzed multiple times in the same run
+//
+def validateInputSamplesheet2(ch_samplesheet) {
+    all_fastq_files = ch_samplesheet.map{ meta, fastq -> fastq}.collect()
+    all_fastq_files.count().view()
+    all_fastq_files_unique = all_fastq_files.unique()
+    all_fastq_files_unique.count().view()
+
+    if(all_fastq_files.count() != all_fastq_files_unique.count()){
+        error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
+    }
 }
 
 //
