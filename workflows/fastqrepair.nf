@@ -42,17 +42,24 @@ workflow FASTQREPAIR {
         GZRT.out.fastq
     )
 
+    // Run if PAIRED-END reads only!
+    SCATTER_WIPE_GATHER.out.fixed_fastq
+        .branch {
+            single_end: it[0].single_end == true
+            paired_end: it[0].single_end == false
+        }
+        .set { filtered_ch }
+
     // Remove unpaired reads and reads shorter than 20 nt
-    // TODO: run if PAIRED-END reads only!!!!!
     TRIMMOMATIC (
-        SCATTER_WIPE_GATHER.out.fixed_fastq.groupTuple()
+        filtered_ch.paired_end.groupTuple()
     )
 
-    // Settle reads interleaving
-    // TODO: run if PAIRED-END reads only!!!!!
+    // Settle reads pairing (re-pair)
     BBMAPREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
+    
 
     // SCATTER_WIPE_GATHER.out.fixed_fastq.view()
 
