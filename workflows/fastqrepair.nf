@@ -32,7 +32,7 @@ workflow FASTQREPAIR {
     // Decouple paired-end reads
     ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
     
-    // Recover fastq files
+    // Recover fastq.gz and skip *.fastq or *.fq
     GZRT (
         ch_decoupled
     )
@@ -59,20 +59,10 @@ workflow FASTQREPAIR {
     BBMAPREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
-    
 
-    // SCATTER_WIPE_GATHER.out.fixed_fastq.view()
-
-
-
-    // Collect the values from both channels into lists
-    // ch_samplesheet.map { metaData, filePaths -> metaData }
-    //                 .combine(GZRT.out.fastq.toList())
-    //                 .set { ch1 }
-
-    // MODULE: Run FastQC
+    // Assess QC
     // FASTQC (
-    //     ch1
+    //     BBMAPREPAIR.out.interleaved_fastq
     // )
 
 

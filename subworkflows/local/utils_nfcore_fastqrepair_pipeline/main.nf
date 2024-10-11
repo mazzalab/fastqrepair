@@ -98,13 +98,31 @@ workflow PIPELINE_INITIALISATION {
 
     //
     // Check that any fastq file is not analyzed multiple times
-    //
-    validateInputSamplesheet2(ch_samplesheet)
+    // .flatten()
+    temp1 = ch_samplesheet.map{ meta, fastq -> fastq}.collect()
+    // hasDuplicates = temp1.size() != temp1.toSet().size()
+    hasDuplicates = temp1.count() != temp1.unique().count()
+    temp1.view()
+    temp1.unique().view()
+    println hasDuplicates
+    
+    // println(temp1.unique().count().toInteger().view() == 1)
+    // println(temp1.count().toInteger().view() == '5')
+    // if(temp1.count().toInteger().view(){ $it } == 5){
+    //     print("HEREEEE")
+    // }
+
+    // println(temp1)
+    // println(temp2)
+    
+    // validateInputSamplesheet2(ch_samplesheet.map{ meta, fastq -> fastq}.collect().toList())
 
     emit:
     samplesheet = ch_samplesheet
     versions    = ch_versions
 }
+
+
 
 /*
 ========================================================================================
@@ -171,15 +189,18 @@ def validateInputSamplesheet(input) {
 //
 // Same fastq files are not allowed to be analyzed multiple times in the same run
 //
-def validateInputSamplesheet2(ch_samplesheet) {
-    all_fastq_files = ch_samplesheet.map{ meta, fastq -> fastq}.collect()
-    all_fastq_files.count().view()
-    all_fastq_files_unique = all_fastq_files.unique()
-    all_fastq_files_unique.count().view()
+def validateInputSamplesheet2(input) {
+    def all_fastq_files = input.map(m -> m)
+    def all_fastq_files_unique = all_fastq_files.unique()
 
-    if(all_fastq_files.count() != all_fastq_files_unique.count()){
-        error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
-    }
+    println "Validation!"
+    println all_fastq_files
+    println all_fastq_files.view()
+    println all_fastq_files_unique
+
+    // if(all_fastq_files.count() != all_fastq_files_unique.size){
+    //     error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
+    // }
 }
 
 //

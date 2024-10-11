@@ -58,11 +58,16 @@ process GZRT {
     
     
     """
-    gzrecover -o ${filename}_recovered.fastq ${fastqgz} -v
+    ver_line=""
+    if [[ $fastqgz == *.fastq ]] || [[ $fastqgz == *.fq ]]; then
+        mv $fastqgz ${filename}_recovered.fastq
+    else
+        gzrecover -o ${filename}_recovered.fastq ${fastqgz} -v
+        ver_line="${task.process}: gzrt: \$(gzrecover -V |& sed '1!d ; s/gzrecover //')"
+    fi
 
     cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        gzrt: \$(gzrecover -V |& sed '1!d ; s/gzrecover //')
+    "\${ver_line}"
     END_VERSIONS
     """
 

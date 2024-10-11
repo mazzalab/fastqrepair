@@ -10,54 +10,43 @@
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
-[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
+<!-- [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/) -->
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
-[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
+<!-- [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/) -->
 [![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/fastqrepair)
 
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23fastqrepair-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/fastqrepair)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
 ## Introduction
 
-**nf-core/fastqrepair** is a bioinformatics pipeline that ...
+**nf-core/fastqrepair** is a bioinformatics pipeline that can be used to recover corrupted `FASTQ.gz` files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered. It takes a `samplesheet` and FASTQ/FASTQ.gz files as input (both single-end and paired-end) and produces clean FASTQ files and a QC report.
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
+![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.svg)
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
-
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
+2. Make recovered reads well-formed ([`fastqwiper`](https://github.com/mazzalab/fastqwiper))
+3. Drop unpaired reads ([`trimmomatic`](http://www.usadellab.org/cms/index.php?page=trimmomatic))
+4. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
 
 ## Usage
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
-
 First, prepare a samplesheet with your input data that looks as follows:
 
-`samplesheet.csv`:
+**samplesheet.csv**:
 
-```csv
+```
 sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+mysampleA,sample_R1.fastq.gz,sample_R2.fastq.gz
+mysampleB,sample_R3.fastq.gz,sample_R4.fastq.gz
+mysampleC,sample_R5.fastq.gz
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
-
--->
+Each row represents a fastq file (single-end) or a pair of fastq files (paired end). Rows with the same sample identifier are not allowed. Row with different sample identifiers but same file names are not allowed.
 
 Now, you can run the pipeline using:
-
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
 
 ```bash
 nextflow run nf-core/fastqrepair \
@@ -66,6 +55,16 @@ nextflow run nf-core/fastqrepair \
    --outdir <OUTDIR>
 ```
 
+optional parameters are:
+```txt
+--chunk_size <int multiple of 4>
+--qin <33/64>
+--alphabet <ACGTN>
+```
+where 
+> `chunk_size` is the number of lines of chunks of the original fastq file (caution! Too big or too small numbers may significantly impact on performance); `qin` is the ASCII offset (33=Sanger, 64=old Solexa); `alphabet` is the allowed alphabet in the SEQ line of the FASTQ file.
+
+
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
@@ -73,6 +72,7 @@ nextflow run nf-core/fastqrepair \
 For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/fastqrepair/usage) and the [parameter documentation](https://nf-co.re/fastqrepair/parameters).
 
 ## Pipeline output
+This pipeline produces clean and well-formed fastq files together with short textual reports of the cleaning actions. 
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/fastqrepair/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
@@ -80,11 +80,11 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-nf-core/fastqrepair was originally written by Tommaso Mazza.
+nf-core/fastqrepair was designed and written by [Tommaso Mazza](https://github.com/mazzalab).
 
-We thank the following people for their extensive assistance in the development of this pipeline:
+<!-- We thank the following people for their extensive assistance in the development of this pipeline: -->
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+<!-- nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
 

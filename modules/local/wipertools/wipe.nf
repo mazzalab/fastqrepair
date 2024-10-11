@@ -37,16 +37,18 @@ process WIPER {
 
     output:
     tuple val(meta), path("*_wiped.fastq.gz"), emit: fixed_fastq
+    tuple val(meta), path("*_report.txt")    , emit: report
     path "versions.yml"                      , emit: versions
 
-    // when:
-    // task.ext.when == null || task.ext.when
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def filename = "${fastq.baseName}"
     def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def log_freq = params.chunk_size / 10 as Integer
 
     // TODO nf-core: Where possible, a command MUST be provided to obtain the version number of the software e.g. 1.10
     //               If the software is unable to output a version number on the command-line then it can be manually specified
@@ -54,9 +56,8 @@ process WIPER {
     //               Each software used MUST provide the software name and version number in the YAML version file (versions.yml)
     // TODO nf-core: It MUST be possible to pass additional parameters to the tool as a command-line string via the "task.ext.args" directive
     
-    // TODO: SET THESE [-l [LOG_OUT]] [-f [LOG_FREQUENCY]] [-a [ALPHABET]] -v [to output the version]
     """
-    wipertools fastqwiper -i $fastq -o ${filename}_wiped.fastq.gz 
+    wipertools fastqwiper -i $fastq -o ${filename}_wiped.fastq.gz -f ${log_freq} -a ${params.alphabet} -l ${filename}_report.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

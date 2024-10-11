@@ -2,11 +2,15 @@ process GATHER {
     tag "$meta.id"
     label 'process_single'
 
+    container 'docker.io/mazzalab/fastqrepair_nf_env:1.0.1'
+
     input:
     tuple val(filename), val(meta), path(fastq_list)
+    tuple val(filename), val(meta), path(report_list)
 
     output:
     tuple val(meta), path("*merged_wiped.fastq.gz"), emit: fastq_merged_fixed
+    path("*merged_report.txt")                     , emit: report_merged
     path "versions.yml"                            , emit: versions
 
     // when:
@@ -19,6 +23,7 @@ process GATHER {
 
     """
     cat ${fastq_list} > ${filename}_merged_wiped.fastq.gz
+    wipertools summarygather -s ${report_list} -f ${filename}_merged_report.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
