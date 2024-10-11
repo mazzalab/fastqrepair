@@ -98,24 +98,8 @@ workflow PIPELINE_INITIALISATION {
 
     //
     // Check that any fastq file is not analyzed multiple times
-    // .flatten()
-    temp1 = ch_samplesheet.map{ meta, fastq -> fastq}.collect()
-    // hasDuplicates = temp1.size() != temp1.toSet().size()
-    hasDuplicates = temp1.count() != temp1.unique().count()
-    temp1.view()
-    temp1.unique().view()
-    println hasDuplicates
-    
-    // println(temp1.unique().count().toInteger().view() == 1)
-    // println(temp1.count().toInteger().view() == '5')
-    // if(temp1.count().toInteger().view(){ $it } == 5){
-    //     print("HEREEEE")
-    // }
-
-    // println(temp1)
-    // println(temp2)
-    
-    // validateInputSamplesheet2(ch_samplesheet.map{ meta, fastq -> fastq}.collect().toList())
+    // 
+    validateInputSamplesheet2(ch_samplesheet.map{ meta, fastq -> fastq}.collect())
 
     emit:
     samplesheet = ch_samplesheet
@@ -190,17 +174,19 @@ def validateInputSamplesheet(input) {
 // Same fastq files are not allowed to be analyzed multiple times in the same run
 //
 def validateInputSamplesheet2(input) {
-    def all_fastq_files = input.map(m -> m)
-    def all_fastq_files_unique = all_fastq_files.unique()
+    s = 0
+    input.size().map{
+        s = it
 
-    println "Validation!"
-    println all_fastq_files
-    println all_fastq_files.view()
-    println all_fastq_files_unique
-
-    // if(all_fastq_files.count() != all_fastq_files_unique.size){
-    //     error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
-    // }
+        sunique = 0
+        input.toSet().size().map{
+            sunique = it
+            
+            if(s != sunique){
+                error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
+            }
+        }
+    }
 }
 
 //
