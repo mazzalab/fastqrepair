@@ -12,7 +12,6 @@ include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gath
 
 include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,24 +59,29 @@ workflow FASTQREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
 
-    // Assess QC
-    // FASTQC (
-    //     BBMAPREPAIR.out.interleaved_fastq
-    // )
+    // Assess QC of all fastq files (both single and paired end)
+    FASTQC (
+        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq)
+    )
 
 
-    // ch_versions = ch_versions.mix(GZRT.out.versions.first())  //FASTQC.out.versions.first(), 
+    ch_versions = ch_versions.mix(
+        GZRT.out.versions.first(),
+        
+        FASTQC.out.versions.first()
+        )
+    ch_versions.view()
 
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_pipeline_software_fastqrepair_versions.yml',
-            sort: true,
-            newLine: true
-        ).set { ch_collated_versions }
+    // softwareVersionsToYAML(ch_versions)
+    //     .collectFile(
+    //         storeDir: "${params.outdir}/pipeline_info",
+    //         name: 'nf_core_pipeline_software_fastqrepair_versions.yml',
+    //         sort: true,
+    //         newLine: true
+    //     ).set { ch_collated_versions }
 
     
 

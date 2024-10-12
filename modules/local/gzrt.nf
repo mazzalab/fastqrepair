@@ -63,11 +63,13 @@ process GZRT {
         mv $fastqgz ${filename}_recovered.fastq
     else
         gzrecover -o ${filename}_recovered.fastq ${fastqgz} -v
-        ver_line="${task.process}: gzrt: \$(gzrecover -V |& sed '1!d ; s/gzrecover //')"
+        soft_line="${task.process}"
+        ver_line="gzrt: \$(gzrecover -V |& sed '1!d ; s/gzrecover //')"
     fi
 
     cat <<-END_VERSIONS > versions.yml
-    "\${ver_line}"
+    "\${soft_line}":
+        \${ver_line}
     END_VERSIONS
     """
 
