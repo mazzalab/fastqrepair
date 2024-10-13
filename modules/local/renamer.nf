@@ -1,17 +1,13 @@
-process BBMAPREPAIR {
+process RENAMER {
     tag "$meta.id"
     label 'process_single'
-
-    container 'docker.io/mazzalab/fastqrepair_nf_env:1.0.1'
 
     input:
     tuple val(meta), path(fastq)
 
     output:
-    tuple val(meta), path("*_interleaving.fastq.gz"), emit: interleaved_fastq
-    path("*_singletons.fastq.gz")                   , emit: singletons_fastq
-    path("*_repair.log")                            , emit: log
-    path "versions.yml"                             , emit: versions
+    tuple val(meta), path("*_repaired.fastq.gz"), emit: renamed_fastq
+    path "versions.yml"                         , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -19,18 +15,27 @@ process BBMAPREPAIR {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def fq1 = fastq[0]
+    def fq2 = fastq[1]
+    def new_name_fq1="${meta.id}_R1_repaired.fastq.gz"
+    def new_name_fq2="${meta.id}_R2_repaired.fastq.gz"
 
-    def infastq1 = fastq[0]
-    def infastq2 = fastq[1]
-    def outfastq1 = infastq1.baseName
-    def outfastq2 = infastq2.baseName
-        
+    //Check if it's a _1 or _2 files and rename to R1 or R2
     """
-    repair.sh qin=${params.qin} in=${infastq1} in2=${infastq2} out=${outfastq1}_interleaving.fastq.gz out2=${outfastq2}_interleaving.fastq.gz outsingle=${fastq[0].baseName}_singletons.fastq.gz 2> ${fastq[0].baseName}_repair.log
+    if [[ $fq1 == *_trim_2.fastq_interleaving.fastq.gz ]]; then
+        new_name_fq1='${meta.id}_R2_repaired.fastq.gz}'
+    fi
+    cp '${fq1}' '${new_name_fq1}'
+
+    if [[ $fq2 == *_trim_1.fastq_interleaving.fastq.gz ]]; then
+        new_name_fq2='${meta.id}_R1_repaired.fastq.gz}'
+    fi
+    cp '${fq2}' '${new_name_fq2}'
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        repair.sh: \$(bbversion.sh)
+        renamer: 1.0.0
     END_VERSIONS
     """
 
@@ -46,7 +51,7 @@ process BBMAPREPAIR {
 
     // cat <<-END_VERSIONS > versions.yml
     // "${task.process}":
-    //     bbmaprepair: \$(samtools --version |& sed '1!d ; s/samtools //')
+    //     renamer: \$(samtools --version |& sed '1!d ; s/samtools //')
     // END_VERSIONS
     // """
 }

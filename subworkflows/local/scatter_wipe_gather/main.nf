@@ -15,7 +15,7 @@ workflow SCATTER_WIPE_GATHER {
     }
 
     ch_wiper = Channel.empty()
-    ch_wiper = SCATTER.out.fastq_chunks.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
+    ch_wiper = SCATTER.out.fastq_chunks.flatMap { metaData, filePaths -> filePaths instanceof List ? filePaths.collect { files -> [metaData, files] } : [[metaData, filePaths]] }
     
     WIPER {
         ch_wiper

@@ -48,7 +48,8 @@ process WIPER {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def filename = "${fastq.baseName}"
     def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
-    def log_freq = params.chunk_size / 10 as Integer
+    def log_freq = (params.chunk_size / 100 as Integer) * 10
+    log_freq = log_freq == 0 ? 1 : log_freq
 
     // TODO nf-core: Where possible, a command MUST be provided to obtain the version number of the software e.g. 1.10
     //               If the software is unable to output a version number on the command-line then it can be manually specified

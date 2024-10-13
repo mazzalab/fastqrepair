@@ -8,6 +8,7 @@ include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
 include { GZRT                   } from '../modules/local/gzrt'
 include { BBMAPREPAIR            } from '../modules/local/bbmaprepair'
+include { RENAMER                } from '../modules/local/renamer'
 include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
 
 include { paramsSummaryMap       } from 'plugin/nf-validation'
@@ -59,30 +60,34 @@ workflow FASTQREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
 
+    RENAMER (
+        BBMAPREPAIR.out.interleaved_fastq
+    )
+
     // Assess QC of all fastq files (both single and paired end)
     FASTQC (
-        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq)
+        filtered_ch.single_end.concat(RENAMER.out.renamed_fastq)
     )
 
 
     ch_versions = ch_versions.mix(
         GZRT.out.versions.first(),
-        
+        SCATTER_WIPE_GATHER.out.versions.first(),
+        TRIMMOMATIC.out.versions.first(),
+        BBMAPREPAIR.out.versions.first(),
         FASTQC.out.versions.first()
-        )
-    ch_versions.view()
+    )
 
     //
     // Collate and save software versions
     //
-    // softwareVersionsToYAML(ch_versions)
-    //     .collectFile(
-    //         storeDir: "${params.outdir}/pipeline_info",
-    //         name: 'nf_core_pipeline_software_fastqrepair_versions.yml',
-    //         sort: true,
-    //         newLine: true
-    //     ).set { ch_collated_versions }
-
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name: 'nf_core_pipeline_software_fastqrepair_versions.yml',
+            sort: true,
+            newLine: true
+        ).set { ch_collated_versions }
     
 
     emit:
