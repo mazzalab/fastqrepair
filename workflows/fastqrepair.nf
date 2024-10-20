@@ -9,8 +9,6 @@ include { GZRT                   } from '../modules/local/gzrt'
 include { BBMAPREPAIR            } from '../modules/local/bbmaprepair'
 include { RENAMER                } from '../modules/local/renamer'
 include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
-
-include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 /*
@@ -58,13 +56,11 @@ workflow FASTQREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
 
-    filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq).view()
 
+    // Rename final files and move them into the "pickup" folder
     RENAMER (
         filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq)
     )
-
-    RENAMER.out.renamed_fastq.view()
 
     // Assess QC of all fastq files (both single and paired end)
     FASTQC (
