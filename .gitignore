@@ -4,6 +4,7 @@
 
 work/
 data/
+dataset/
 results/
 .DS_Store
 testing/
