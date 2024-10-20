@@ -16,7 +16,7 @@ workflow SCATTER_WIPE_GATHER {
 
     ch_wiper = Channel.empty()
     ch_wiper = SCATTER.out.fastq_chunks.flatMap { metaData, filePaths -> filePaths instanceof List ? filePaths.collect { files -> [metaData, files] } : [[metaData, filePaths]] }
-    
+
     WIPER {
         ch_wiper
     }
@@ -39,7 +39,7 @@ workflow SCATTER_WIPE_GATHER {
 
     emit:
     fixed_fastq = GATHER.out.fastq_merged_fixed     // channel: [ val(meta), [ .fastq ] ]
-    report      = GATHER.out.report_merged
+    report      = GATHER.out.report_merged          // channel: [ val(meta), [ .txt ] ]
     versions    = ch_versions                       // channel: [ versions.yml ]
 }
 

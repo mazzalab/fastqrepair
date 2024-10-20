@@ -5,3 +5,4 @@ channels:
   - conda-forge
 dependencies:
   - nf-core=3.0.2
+  - prettier=3.3.3

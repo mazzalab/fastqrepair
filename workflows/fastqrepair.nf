@@ -5,9 +5,9 @@
 */
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
-include { GZRT                   } from '../modules/local/gzrt'
-include { BBMAPREPAIR            } from '../modules/local/bbmaprepair'
-include { RENAMER                } from '../modules/local/renamer'
+include { GZRT                   } from '../modules/local/gzrt/main'
+include { BBMAPREPAIR            } from '../modules/local/bbmaprepair/main'
+include { RENAMER                } from '../modules/local/renamer/main'
 include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -27,12 +27,12 @@ workflow FASTQREPAIR {
 
     // Decouple paired-end reads
     ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
-    
+
     // Recover fastq.gz and skip *.fastq or *.fq
     GZRT (
         ch_decoupled
     )
-    
+
     // Make fastq compliant and wipe bad characters
     SCATTER_WIPE_GATHER (
         GZRT.out.fastq
@@ -57,9 +57,10 @@ workflow FASTQREPAIR {
     }
 
 
-    // Rename final files and move them into the "pickup" folder
+    // Rename final FASTQ and REPORT files and move them into the "pickup" folder
     RENAMER (
-        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq)
+        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq),
+        SCATTER_WIPE_GATHER.out.report.groupTuple()
     )
 
     // Assess QC of all fastq files (both single and paired end)
@@ -86,7 +87,7 @@ workflow FASTQREPAIR {
             sort: true,
             newLine: true
         ).set { ch_collated_versions }
-    
+
 
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]

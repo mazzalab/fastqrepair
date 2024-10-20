@@ -9,7 +9,7 @@ process GATHER {
 
     output:
         tuple val(meta), path("*merged_wiped.fastq.gz"), emit: fastq_merged_fixed
-        path("*merged_report.txt")                     , emit: report_merged
+        tuple val(meta), path("*merged_report.txt")    , emit: report_merged
         path "versions.yml"                            , emit: versions
 
     when:
