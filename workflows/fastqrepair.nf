@@ -3,7 +3,6 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
 include { GZRT                   } from '../modules/local/gzrt'
@@ -24,7 +23,6 @@ workflow FASTQREPAIR {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
-
     main:
     ch_versions = Channel.empty()
     ch_decoupled = Channel.empty()
@@ -96,6 +94,7 @@ workflow FASTQREPAIR {
 
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
+
 }
 
 /*

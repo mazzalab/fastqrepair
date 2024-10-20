@@ -1,4 +1,2 @@
 sample,fastq_1,fastq_2
 mysampleA,./dataset/sample_R1.fastq.gz,./dataset/sample_R2.fastq.gz
-mysampleB,./dataset/sample_R3.fastq.gz,./dataset/sample_R4.fastq.gz
-mysampleC,./dataset/sample_R5.fastq.gz
