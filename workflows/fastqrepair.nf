@@ -60,13 +60,17 @@ workflow FASTQREPAIR {
         TRIMMOMATIC.out.trimmed_reads
     }
 
+    filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq).view()
+
     RENAMER (
-        BBMAPREPAIR.out.interleaved_fastq
+        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq)
     )
+
+    RENAMER.out.renamed_fastq.view()
 
     // Assess QC of all fastq files (both single and paired end)
     FASTQC (
-        filtered_ch.single_end.concat(RENAMER.out.renamed_fastq)
+        RENAMER.out.renamed_fastq
     )
 
 
@@ -84,7 +88,7 @@ workflow FASTQREPAIR {
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_pipeline_software_fastqrepair_versions.yml',
+            name: 'nf-core_fastqrepair_versions.yml',
             sort: true,
             newLine: true
         ).set { ch_collated_versions }
