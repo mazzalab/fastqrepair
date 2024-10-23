@@ -94,8 +94,8 @@ chunk_size     # number of lines in each chunk generated from the original fastq
 qin            # ASCII offset (33=Sanger, 64=old Solexa)
 alphabet       # allowed alphabet in the SEQ line of the FASTQ file
 ```
-:::warning
- Caution! Too big or too small chunk size numbers may significantly impact on performance
+> [!WARNING]
+> Caution! Too big or too small chunk size numbers may significantly impact on performance
 :::
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
