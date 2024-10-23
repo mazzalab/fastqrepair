@@ -89,13 +89,13 @@ outdir: './results/'
 <...>
 ```
 optional parameters are:
-```
-chunk_size     # number of lines in each chunk generated from the original fastq file
-qin            # ASCII offset (33=Sanger, 64=old Solexa)
-alphabet       # allowed alphabet in the SEQ line of the FASTQ file
+```yaml title="optional_params.yaml"
+chunk_size: <int multiple of 4>   # number of lines in each chunk generated from the original fastq file
+qin:        <33/64>               # ASCII offset (33=Sanger, 64=old Solexa)
+alphabet:   <ACGTN>               # allowed alphabet in the SEQ line of the FASTQ file
 ```
 > [!WARNING]
-> Caution! Too big or too small chunk size numbers may significantly impact on performance
+> Caution! Too big or too small `chunk size` numbers may significantly impact on performance
 :::
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).

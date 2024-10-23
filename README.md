@@ -39,7 +39,7 @@ First, prepare a samplesheet with your input data that looks as follows:
 
 **samplesheet.csv**:
 
-```
+```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
 mysampleA,sample_R1.fastq.gz,sample_R2.fastq.gz
 mysampleB,sample_R3.fastq.gz,sample_R4.fastq.gz
