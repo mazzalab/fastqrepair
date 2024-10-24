@@ -24,11 +24,11 @@ workflow SCATTER_WIPE_GATHER {
     ch_fastq_gather  = Channel.empty()
     ch_report_gather = Channel.empty()
     ch_fastq_gather  = WIPER.out.fixed_fastq.map{ metaData, fastq -> tuple( (fastq.baseName =~ /(.+)_chunk/)[0][1], metaData, fastq ) }
-                                     .groupTuple()
-                                     .map{ basename, metadata, fastq -> tuple(basename, metadata.first(), fastq) }
+                                    .groupTuple()
+                                    .map{ basename, metadata, fastq -> tuple(basename, metadata.first(), fastq) }
     ch_report_gather = WIPER.out.report.map{ metaData, report -> tuple( (report.baseName =~ /(.+)_chunk/)[0][1], metaData, report ) }
-                                       .groupTuple()
-                                       .map{ basename, metadata, report -> tuple(basename, metadata.first(), report) }
+                                    .groupTuple()
+                                    .map{ basename, metadata, report -> tuple(basename, metadata.first(), report) }
     GATHER(
         ch_fastq_gather,
         ch_report_gather
