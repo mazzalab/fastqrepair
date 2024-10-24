@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial release of nf-core/fastqrepair, created with the [nf-core](https://nf-co.re/) template.
 
 ### `Dependencies`
-| Dependency                      | New version |
-| ------------------------------- | ----------- |
-| `BBmap`                         | 39.08       |
-| `FastQC`                        | 0.12.1      |
-| `gzrt`                          | 0.8         |
-| `Trimmonatic`                   | 0.39        |
-| `FastqWiper`                    | 1.0.0       |
+
+| Dependency    | New version |
+| ------------- | ----------- |
+| `BBmap`       | 39.08       |
+| `FastQC`      | 0.12.1      |
+| `gzrt`        | 0.8         |
+| `Trimmonatic` | 0.39        |
+| `FastqWiper`  | 1.0.0       |

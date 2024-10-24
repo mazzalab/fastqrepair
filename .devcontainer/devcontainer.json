@@ -14,10 +14,7 @@
     },
     "customizations": {
         "vscode": {
-            "extensions": [
-                "ms-azuretools.vscode-docker",
-                "nf-core.nf-core-extensionpack"
-            ]
+            "extensions": ["ms-azuretools.vscode-docker", "nf-core.nf-core-extensionpack"]
         }
     },
     // "remoteEnv": {

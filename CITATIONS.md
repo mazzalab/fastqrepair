@@ -30,7 +30,6 @@
 
 > Bushnell B. (2024). BBMap [Online]
 
-
 ## Software packaging/containerisation tools
 
 <!-- - [Anaconda](https://anaconda.com)

@@ -14,9 +14,10 @@ You will need to create a samplesheet that will be provided in input to `fastqre
 --input '[path to samplesheet file]'
 ```
 
- The samplesheet will contain information about the samples you would like to analyse before running the pipeline. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+The samplesheet will contain information about the samples you would like to analyse before running the pipeline. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
 
 ### Multiple runs of the same sample
+
 > [!WARNING]
 > All `sample` identifiers in a samplesheet must be unique. Rows with different `sample` identifiers but same file names are not allowed either.
 
@@ -40,11 +41,11 @@ mysampleB,sample_2_R1.fastq.gz,sample_2_R2.fastq.gz
 mysampleC,sample_3_R1.fastq.gz,
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for short reads R1. Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq".                                                             |
-| `fastq_2` | Full path to FastQ file for short reads R2 (optional). Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq".                                                             |
+| Column    | Description                                                                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`  | Custom sample name. Spaces in sample names are automatically converted to underscores (`_`).                                                 |
+| `fastq_1` | Full path to FastQ file for short reads R1. Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq".            |
+| `fastq_2` | Full path to FastQ file for short reads R2 (optional). Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq". |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -88,15 +89,18 @@ input: './samplesheet.csv'
 outdir: './results/'
 <...>
 ```
+
 optional parameters are:
+
 ```yaml title="optional_params.yaml"
-chunk_size: <int multiple of 4>   # number of lines in each chunk generated from the original fastq file
-qin:        <33/64>               # ASCII offset (33=Sanger, 64=old Solexa)
-alphabet:   <ACGTN>               # allowed alphabet in the SEQ line of the FASTQ file
+chunk_size: <int multiple of 4> # number of lines in each chunk generated from the original fastq file
+qin: <33/64> # ASCII offset (33=Sanger, 64=old Solexa)
+alphabet: <ACGTN> # allowed alphabet in the SEQ line of the FASTQ file
 ```
+
 > [!WARNING]
 > Caution! Too big or too small `chunk size` numbers may significantly impact on performance
-:::
+> :::
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
@@ -137,6 +141,7 @@ Use this parameter to choose a configuration profile. Profiles can give configur
 <!-- :::info
 We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 ::: -->
+
 :::info
 We highly recommend the use of Docker container for full pipeline reproducibility.
 :::
@@ -153,7 +158,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   - Includes links to test data so needs no other parameters
 - `docker`
   - A generic configuration profile to be used with [Docker](https://docker.com/)
-<!-- - `singularity`
+  <!-- - `singularity`
   - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
 - `podman`
   - A generic configuration profile to be used with [Podman](https://podman.io/)

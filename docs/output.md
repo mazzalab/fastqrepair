@@ -34,6 +34,7 @@ The nf-core/fastqrepair pipeline is built using [Nextflow](https://www.nextflow.
 ```
 
 where
+
 - `mysampleA_R1_repaired.fastq.gz` and `mysampleA_R2_repaired.fastq.gz` are the repaired fastq files
 - `mysampleA_R1_report.txt` and `mysampleA_R2_report.txt` are the summaries of the cleaning task by [FastqWiper](#fastqwiper)
 - **QC** contains [FastQC](#fastqc) QC analysis results
@@ -51,7 +52,6 @@ where
 </details>
 
 [FastqWiper](https://github.com/mazzalab/fastqwiper) is a Python package that makes an uncompliant FASTQ file well-formed by dropping and fixing pesky lines.
-
 
 ### FastQC
 
