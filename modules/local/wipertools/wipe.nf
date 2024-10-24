@@ -2,7 +2,7 @@ process WIPER {
     tag "$meta.id"
     label 'process_single'
     container 'docker.io/mazzalab/fastqrepair_nf_env:1.0.1'
-    
+
     input:
         tuple val(meta), path(fastq)
 

@@ -1,7 +1,7 @@
 process SCATTER {
     tag "$meta.id"
     label 'process_single'
-    
+
     input:
     tuple val(meta), path(fastq)
 

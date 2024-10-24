@@ -89,7 +89,7 @@ workflow PIPELINE_INITIALISATION {
 
     //
     // Check that any fastq file is not analyzed multiple times
-    // 
+    //
     validateInputSamplesheet2(ch_samplesheet.map{ meta, fastq -> fastq}.collect())
 
     emit:
@@ -178,7 +178,7 @@ def validateInputSamplesheet2(input) {
         sunique = 0
         input.toSet().size().map{
             sunique = it
-            
+
             if(s != sunique){
                 error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
             }
