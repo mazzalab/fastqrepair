@@ -87,7 +87,6 @@ For more details about the output files and reports, please refer to the
 `nf-core/fastqrepair` was designed and written by [Tommaso Mazza](https://github.com/mazzalab).
 
 <!-- We thank the following people for their extensive assistance in the development of this pipeline: -->
-
 <!-- nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
