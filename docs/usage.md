@@ -54,7 +54,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/fastqrepair --input ./samplesheet.csv --outdir ./results -profile docker
+nextflow run nf-core/fastqrepair --input samplesheet.csv --outdir ./results -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -85,22 +85,18 @@ nextflow run nf-core/fastqrepair -profile docker -params-file params.yaml
 with:
 
 ```yaml title="params.yaml"
-input: './samplesheet.csv'
-outdir: './results/'
-<...>
-```
+## Mandatory params
+input: "samplesheet.csv"
+outdir: "./results/"
 
-optional parameters are:
-
-```yaml title="optional_params.yaml"
-chunk_size: <int multiple of 4> # number of lines in each chunk generated from the original fastq file
+## Optional params
+chunk_size: <int multiple of 4> # number of lines in each chunk generated from the original FASTQ file
 qin: <33/64> # ASCII offset (33=Sanger, 64=old Solexa)
 alphabet: <ACGTN> # allowed alphabet in the SEQ line of the FASTQ file
 ```
 
 > [!WARNING]
-> Caution! Too big or too small `chunk size` numbers may significantly impact on performance
-> :::
+> Caution! Too big or too small `chunk size` values may significantly impact on performance
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
@@ -146,7 +142,7 @@ We highly recommend the use of Docker or Singularity containers for full pipelin
 We highly recommend the use of Docker container for full pipeline reproducibility.
 :::
 
-The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
+<!-- The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation). -->
 
 Note that multiple profiles can be loaded, for example: `-profile test,docker` - the order of arguments is important!
 They are loaded in sequence, so later profiles can overwrite earlier profiles.
@@ -159,18 +155,18 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `docker`
   - A generic configuration profile to be used with [Docker](https://docker.com/)
   <!-- - `singularity`
-  - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
-- `podman`
-  - A generic configuration profile to be used with [Podman](https://podman.io/)
-- `shifter`
-  - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
-- `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
-- `apptainer`
-  - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
-- `wave`
-  - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow ` 24.03.0-edge` or later).
-- `conda`
+  - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/) -->
+  <!-- - `podman`
+  - A generic configuration profile to be used with [Podman](https://podman.io/) -->
+  <!-- - `shifter`
+  - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/) -->
+  <!-- - `charliecloud`
+  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/) -->
+  <!-- - `apptainer`
+  - A generic configuration profile to be used with [Apptainer](https://apptainer.org/) -->
+  <!-- - `wave`
+  - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow ` 24.03.0-edge` or later). -->
+  <!-- - `conda`
   - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer. -->
 
 ### `-resume`

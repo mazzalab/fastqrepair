@@ -52,22 +52,22 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run nf-core/fastqrepair \
-   -profile <docker/singularity/.../institute> \
+   -profile <test/docker> \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
 
 optional parameters are:
 
-```txt
---chunk_size <int multiple of 4>
---qin <33/64>
---alphabet <ACGTN>
+```bash
+--chunk_size  <int multiple of 4>
+--qin         <33/64>
+--alphabet    <ACGTN>
 ```
 
 where
 
-> `chunk_size` is the number of lines of chunks of the original fastq file (caution! Too big or too small numbers may significantly impact on performance); `qin` is the ASCII offset (33=Sanger, 64=old Solexa); `alphabet` is the allowed alphabet in the SEQ line of the FASTQ file.
+`chunk_size` is the number of lines of chunks of the original fastq file (caution! Too big or too small numbers may significantly impact on performance); `qin` is the ASCII offset (33=Sanger, 64=old Solexa); `alphabet` is the allowed alphabet in the SEQ line of the FASTQ file.
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
@@ -84,7 +84,7 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-nf-core/fastqrepair was designed and written by [Tommaso Mazza](https://github.com/mazzalab).
+`nf-core/fastqrepair` was designed and written by [Tommaso Mazza](https://github.com/mazzalab).
 
 <!-- We thank the following people for their extensive assistance in the development of this pipeline: -->
 
