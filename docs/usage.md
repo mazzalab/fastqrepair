@@ -54,7 +54,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/fastqrepair --input ./samplesheet.csv --outdir ./results -profile docker
+nextflow run nf-core/fastqrepair --input samplesheet.csv --outdir ./results -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -85,22 +85,12 @@ nextflow run nf-core/fastqrepair -profile docker -params-file params.yaml
 with:
 
 ```yaml title="params.yaml"
-input: './samplesheet.csv'
-outdir: './results/'
-<...>
+## Mandatory params
+input: "samplesheet.csv"
+outdir: "./results/"
 ```
 
-optional parameters are:
-
-```yaml title="optional_params.yaml"
-chunk_size: <int multiple of 4> # number of lines in each chunk generated from the original fastq file
-qin: <33/64> # ASCII offset (33=Sanger, 64=old Solexa)
-alphabet: <ACGTN> # allowed alphabet in the SEQ line of the FASTQ file
-```
-
-> [!WARNING]
-> Caution! Too big or too small `chunk size` numbers may significantly impact on performance
-> :::
+Optional parameters are described in the [Parameters](https://nf-co.re/fastqrepair/dev/parameters/) tab.
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
@@ -158,7 +148,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   - Includes links to test data so needs no other parameters
 - `docker`
   - A generic configuration profile to be used with [Docker](https://docker.com/)
-  <!-- - `singularity`
+- `singularity`
   - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
 - `podman`
   - A generic configuration profile to be used with [Podman](https://podman.io/)
@@ -171,7 +161,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `wave`
   - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow ` 24.03.0-edge` or later).
 - `conda`
-  - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer. -->
+  - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
 
 ### `-resume`
 

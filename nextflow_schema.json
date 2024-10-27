@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/master/nextflow_schema.json",
     "title": "nf-core/fastqrepair pipeline parameters",
-    "description": "A pipeline to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving",
+    "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered",
     "type": "object",
     "$defs": {
         "input_output_options": {
@@ -26,22 +26,27 @@
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "description": "The output directory where the results will be saved.",
+                    "help_text": "You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
                 "chunk_size": {
                     "type": "integer",
+                    "default": 20000000,
                     "description": "The input fastq file will be split into chunks of this numnber of lines to speedup wiping. The number must be multiple of 4.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "qin": {
                     "type": "integer",
+                    "enum": [33, 64],
+                    "default": 33,
                     "description": "the ASCII offset (33=Sanger, 64=old Solexa).",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "alphabet": {
                     "type": "string",
-                    "description": "Allowed character in the SEQ line. Default: ACGTN.",
+                    "default": "ACGTN",
+                    "description": "Allowed character in the SEQ line.",
                     "fa_icon": "fas fa-solid fa-arrows-left-right-to-line"
                 },
                 "email": {
@@ -112,7 +117,7 @@
                     "type": "boolean",
                     "description": "Display version and exit.",
                     "fa_icon": "fas fa-question-circle",
-                    "hidden": true
+                    "hidden": false
                 },
                 "publish_dir_mode": {
                     "type": "string",
@@ -125,11 +130,10 @@
                 },
                 "publish_dir_all_tools": {
                     "type": "boolean",
-                    "default": false,
                     "description": "To specify whether to publish all pipeline intermediate results to output directory.",
                     "help_text": "This option tells the pipeline whether to publish all intermediate results to output directory.",
                     "fa_icon": "fas fa-copy",
-                    "hidden": true
+                    "hidden": false
                 },
                 "email_on_fail": {
                     "type": "string",
