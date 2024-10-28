@@ -5,7 +5,7 @@ process GATHER {
 
     input:
         tuple val(filename), val(meta), path(fastq_list)
-        tuple val(filename), val(meta), path(report_list)
+        tuple val(report_filename), val(report_meta), path(report_list)
 
     output:
         tuple val(meta), path("*merged_wiped.fastq.gz"), emit: fastq_merged_fixed
@@ -16,9 +16,7 @@ process GATHER {
     task.ext.when == null || task.ext.when
 
     script:
-        def args    = task.ext.args ?: ''
-        def prefix  = task.ext.prefix ?: "${meta.id}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
         """
         cat ${fastq_list} > ${filename}_merged_wiped.fastq.gz
@@ -26,14 +24,12 @@ process GATHER {
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
-            wipertools: $VERSION
+        wipertools: $VERSION
         END_VERSIONS
         """
 
     stub:
-        def args = task.ext.args ?: ''
-        def prefix = task.ext.prefix ?: "${meta.id}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
         """
         gzip < /dev/null > ${filename}_merged_wiped.fastq.gz
@@ -41,7 +37,7 @@ process GATHER {
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
-            wipertools: $VERSION
+        wipertools: $VERSION
         END_VERSIONS
         """
 }

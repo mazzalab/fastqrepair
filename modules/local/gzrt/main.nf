@@ -14,10 +14,7 @@ process GZRT {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     def filename = "${fastqgz.baseName}"
-
     """
     ver_line=""
     if [[ $fastqgz == *.fastq ]] || [[ $fastqgz == *.fq ]]; then
@@ -35,8 +32,7 @@ process GZRT {
     """
 
     stub:
-    def args = task.ext.args ?: ''
-
+    def filename = "${fastqgz.baseName}"
     """
     ver_line=""
     if [[ $fastqgz == *.fastq ]] || [[ $fastqgz == *.fq ]]; then

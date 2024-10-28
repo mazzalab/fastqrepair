@@ -17,14 +17,10 @@ process BBMAPREPAIR {
         task.ext.when == null || task.ext.when
 
     script:
-        def args = task.ext.args ?: ''
-        def prefix = task.ext.prefix ?: "${meta.id}"
-
         def infastq1 = fastq[0]
         def infastq2 = fastq[1]
         def outfastq1 = infastq1.baseName
         def outfastq2 = infastq2.baseName
-
         """
         repair.sh qin=${params.qin} in=${infastq1} in2=${infastq2} out=${outfastq1}_interleaving.fastq.gz out2=${outfastq2}_interleaving.fastq.gz outsingle=${fastq[0].baseName}_singletons.fastq.gz 2> ${fastq[0].baseName}_repair.log
 
@@ -35,9 +31,6 @@ process BBMAPREPAIR {
     """
 
     stub:
-        def args = task.ext.args ?: ''
-        def prefix = task.ext.prefix ?: "${meta.id}"
-
         def infastq1 = fastq[0]
         def infastq2 = fastq[1]
         def outfastq1 = infastq1.baseName

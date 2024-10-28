@@ -15,8 +15,8 @@ process RENAMER {
     task.ext.when == null || task.ext.when
 
     script:
-        def args = task.ext.args ?: ''
-        def prefix = task.ext.prefix ?: "${meta_fastq.id}"
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+
         def fq1 = fastq[0]
         def fq2 = fastq[1]
 
@@ -66,20 +66,27 @@ process RENAMER {
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
-            renamer: 1.0.0
+        renamer: $VERSION
         END_VERSIONS
     """
 
     stub:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta_fastq.id}"
+    def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+
     def fq1 = fastq[0]
-    def fq2 = fastq[1]
     def new_name_fq1 = "${meta_fastq.id}_R1_repaired.fastq.gz"
     def new_name_fq2 = "${meta_fastq.id}_R2_repaired.fastq.gz"
     def new_name_fqsingle = "${meta_fastq.id}_repaired.fastq.gz"
+    def is_single_end_fq = "${meta_fastq.single_end}".toBoolean()
+
+    def rep1 = report[0]
+    def new_name_rep1 = "${meta_report.id}_R1_report.txt"
+    def new_name_rep2 = "${meta_report.id}_R2_report.txt"
+    def new_name_repsingle = "${meta_report.id}_report.txt"
+    def is_single_end_report = "${meta_report.single_end}".toBoolean()
 
     """
+        # Rename FASTQ files
         if [[ ${is_single_end_fq} = true ]]; then
             # No second file, treat as single-end
             touch ${new_name_fqsingle}
@@ -95,9 +102,24 @@ process RENAMER {
             touch "${new_name_fq2}"
         fi
 
+        # Rename REPORT files
+        if [[ ${is_single_end_report} = true ]]; then
+            touch ${new_name_repsingle}
+        elif [[ "${rep1}" == *"R2.fastq_recovered_merged_report.txt" ]]; then
+            new_name_rep1="${meta_report.id}_R2_report.txt"
+            new_name_rep2="${meta_report.id}_R1_report.txt"
+            touch "${new_name_rep1}"
+            touch "${new_name_rep2}"
+        elif [[ "${rep1}" == *"R1.fastq_recovered_merged_report.txt" ]]; then
+            new_name_rep2="${meta_report.id}_R2_report.txt"
+            new_name_rep1="${meta_report.id}_R1_report.txt"
+            touch "${new_name_rep1}"
+            touch "${new_name_rep2}"
+        fi
+
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
-            renamer: 1.0.0
+        renamer: $VERSION
         END_VERSIONS
         """
 }

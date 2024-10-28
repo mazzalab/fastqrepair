@@ -17,7 +17,7 @@ process WIPER {
     script:
         def args = task.ext.args ?: ''
         def filename = "${fastq.baseName}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
         def log_freq = (params.chunk_size / 100 as Integer) * 10
         log_freq = log_freq == 0 ? 1 : log_freq
 
@@ -33,7 +33,7 @@ process WIPER {
     stub:
         def args = task.ext.args ?: ''
         def filename = "${fastq.baseName}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
         """
         touch ${filename}_wiped.fastq.gz
         touch ${filename}_report.txt

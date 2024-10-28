@@ -9,14 +9,11 @@ process SCATTER {
     tuple val(meta), path("*_chunk.*.fastq"), emit: fastq_chunks
     path "versions.yml"                     , emit: versions
 
-    // when:
-    // task.max_cpus > 1
-
     script:
         def args = task.ext.args ?: ''
         def prefix = task.ext.prefix ?: "${meta.id}"
         def filename = "${fastq.baseName}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
         """
         split -a3 -l ${params.chunk_size} --numeric-suffixes=1 --additional-suffix .fastq ${fastq} ${filename}_chunk.
@@ -31,7 +28,7 @@ process SCATTER {
         def args = task.ext.args ?: ''
         def prefix = task.ext.prefix ?: "${meta.id}"
         def filename = "${fastq.baseName}"
-        def VERSION = '1.0.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
         """
         touch ${filename}_chunk.001.fastq
