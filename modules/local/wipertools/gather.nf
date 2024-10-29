@@ -16,28 +16,28 @@ process GATHER {
     task.ext.when == null || task.ext.when
 
     script:
-        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
-        """
-        cat ${fastq_list} > ${filename}_merged_wiped.fastq.gz
-        wipertools summarygather -s ${report_list} -f ${filename}_merged_report.txt
+    """
+    cat ${fastq_list} > ${filename}_merged_wiped.fastq.gz
+    wipertools summarygather -s ${report_list} -f ${filename}_merged_report.txt
 
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
         wipertools: $VERSION
-        END_VERSIONS
-        """
+    END_VERSIONS
+    """
 
     stub:
-        def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
-        """
-        gzip < /dev/null > ${filename}_merged_wiped.fastq.gz
-        touch ${filename}_merged_report.txt
+    """
+    gzip < /dev/null > ${filename}_merged_wiped.fastq.gz
+    touch ${filename}_merged_report.txt
 
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
         wipertools: $VERSION
-        END_VERSIONS
-        """
+    END_VERSIONS
+    """
 }
