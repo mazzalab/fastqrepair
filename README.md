@@ -52,7 +52,7 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run nf-core/fastqrepair \
-   -profile <test/docker> \
+   -profile <test/docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
