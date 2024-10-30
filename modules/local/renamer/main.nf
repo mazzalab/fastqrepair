@@ -3,13 +3,13 @@ process RENAMER {
     label 'process_single'
 
     input:
-    tuple val(meta_fastq), path(fastq)
+    tuple val(meta_fastq),  path(fastq)
     tuple val(meta_report), path(report)
 
     output:
     tuple val(meta_fastq) , path("*_repaired.fastq.gz"), emit: renamed_fastq
-    tuple val(meta_report), path("*_report.txt"), emit: renamed_report
-    path "versions.yml"                         , emit: versions
+    tuple val(meta_report), path("*_report.txt"),        emit: renamed_report
+    path "versions.yml",                                 emit: versions
 
     when:
     task.ext.when == null || task.ext.when

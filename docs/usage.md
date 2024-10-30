@@ -8,7 +8,7 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet that will be provided in input to `fastqrepair` as a `--input` parameter:
+You will need to create a samplesheet that will be provided to `fastqrepair` as a `--input` parameter:
 
 ```bash
 --input '[path to samplesheet file]'
@@ -19,7 +19,7 @@ The samplesheet will contain information about the samples you would like to ana
 ### Multiple runs of the same sample
 
 > [!WARNING]
-> All `sample` identifiers in a samplesheet must be unique. Rows with different `sample` identifiers but same file names are not allowed either.
+> All `sample` identifiers in a samplesheet must be unique. It is not possible to have different `sample` identifiers that refer to the same file name.
 
 Below is an example of a samplesheet containing one paired-end sample:
 
@@ -54,7 +54,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/fastqrepair --input samplesheet.csv --outdir ./results -profile docker
+nextflow run nf-core/fastqrepair --input samplesheet.csv --outdir results -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -126,11 +126,7 @@ These options are part of Nextflow and use a _single_ hyphen (pipeline parameter
 
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-<!-- Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below. -->
-
-<!-- :::info
-We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
-::: -->
+Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below.
 
 :::info
 We highly recommend the use of Docker container for full pipeline reproducibility.

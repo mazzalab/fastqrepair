@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/master/nextflow_schema.json",
     "title": "nf-core/fastqrepair pipeline parameters",
-    "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered",
+    "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settle reads that became disordered",
     "type": "object",
     "$defs": {
         "input_output_options": {
@@ -118,7 +118,7 @@
                     "type": "boolean",
                     "description": "Display version and exit.",
                     "fa_icon": "fas fa-question-circle",
-                    "hidden": false
+                    "hidden": true
                 },
                 "publish_dir_mode": {
                     "type": "string",
