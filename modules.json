@@ -10,6 +10,11 @@
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
                         "installed_by": ["modules"]
                     },
+                    "gzrt": {
+                        "branch": "master",
+                        "git_sha": "60fbc3e6e335d1467301086e8a88aefe7aab2770",
+                        "installed_by": ["modules"]
+                    },
                     "trimmomatic": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",

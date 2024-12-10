@@ -5,7 +5,7 @@
 */
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
-include { GZRT                   } from '../modules/local/gzrt/main'
+include { GZRT                   } from '../modules/nf-core/gzrt/main'
 include { BBMAPREPAIR            } from '../modules/local/bbmaprepair/main'
 include { RENAMER                } from '../modules/local/renamer/main'
 include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
@@ -21,6 +21,7 @@ workflow FASTQREPAIR {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+
     main:
     ch_versions = Channel.empty()
     ch_decoupled = Channel.empty()
@@ -35,7 +36,7 @@ workflow FASTQREPAIR {
 
     // Make fastq compliant and wipe bad characters
     SCATTER_WIPE_GATHER (
-        GZRT.out.fastq
+        GZRT.out.fastqrecovered
     )
 
     // Run if PAIRED-END reads only!
