@@ -22,9 +22,9 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_fast
 */
 
 workflow FASTQREPAIR {
-
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+
     main:
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -32,7 +32,6 @@ workflow FASTQREPAIR {
 
     // Decouple paired-end reads
     ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
-
     // Recover fastq.gz and skip *.fastq or *.fq
     GZRT (
         ch_decoupled
