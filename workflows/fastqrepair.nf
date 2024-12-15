@@ -38,47 +38,48 @@ workflow FASTQREPAIR {
         ch_decoupled
     )
 
-    // Make fastq compliant and wipe bad characters
-    SCATTER_WIPE_GATHER (
-        GZRT.out.fastqrecovered
-    )
+    // // Make fastq compliant and wipe bad characters
+    // SCATTER_WIPE_GATHER (
+    //     GZRT.out.fastqrecovered
+    // )
 
-    // Run if PAIRED-END reads only!
-    SCATTER_WIPE_GATHER.out.fixed_fastq
-        .branch {
-            single_end: it[0].single_end == true
-            paired_end: it[0].single_end == false
-        }
-        .set { filtered_ch }
+    // // Run if PAIRED-END reads only!
+    // SCATTER_WIPE_GATHER.out.fixed_fastq
+    //     .branch {
+    //         single_end: it[0].single_end == true
+    //         paired_end: it[0].single_end == false
+    //     }
+    //     .set { filtered_ch }
 
-    // Remove unpaired reads and reads shorter than 20 nt
-    TRIMMOMATIC (
-        filtered_ch.paired_end.groupTuple()
-    )
+    // // Remove unpaired reads and reads shorter than 20 nt
+    // TRIMMOMATIC (
+    //     filtered_ch.paired_end.groupTuple()
+    // )
 
-    // Settle reads pairing (re-pair)
-    BBMAPREPAIR {
-        TRIMMOMATIC.out.trimmed_reads
-    }
+    // // Settle reads pairing (re-pair)
+    // BBMAPREPAIR {
+    //     TRIMMOMATIC.out.trimmed_reads
+    // }
 
 
-    // Rename final FASTQ and REPORT files and move them into the "pickup" folder
-    RENAMER (
-        filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq),
-        SCATTER_WIPE_GATHER.out.report.groupTuple()
-    )
+    // // Rename final FASTQ and REPORT files and move them into the "pickup" folder
+    // RENAMER (
+    //     filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq),
+    //     SCATTER_WIPE_GATHER.out.report.groupTuple()
+    // )
 
     // Assess QC of all fastq files (both single and paired end)
     FASTQC (
-        RENAMER.out.renamed_fastq
+        // RENAMER.out.renamed_fastq
+        GZRT.out.fastqrecovered
     )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
 
     ch_versions = ch_versions.mix(
         GZRT.out.versions.first(),
-        SCATTER_WIPE_GATHER.out.versions.first(),
-        TRIMMOMATIC.out.versions.first(),
-        BBMAPREPAIR.out.versions.first(),
+        // SCATTER_WIPE_GATHER.out.versions.first(),
+        // TRIMMOMATIC.out.versions.first(),
+        // BBMAPREPAIR.out.versions.first(),
         FASTQC.out.versions.first()
     )
 
