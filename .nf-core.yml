@@ -1,7 +1,4 @@
-bump_version: null
-lint: null
-nf_core_version: 3.0.2
-org_path: null
+nf_core_version: 3.1.0
 repository_type: pipeline
 template:
   author: Tommaso Mazza
@@ -15,4 +12,3 @@ template:
   skip_features:
     - igenomes
   version: 1.0.0
-update: null

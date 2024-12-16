@@ -114,9 +114,11 @@ workflow PIPELINE_COMPLETION {
     outdir          //    path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
     hook_url        //  string: hook URL for notifications
+    multiqc_report  //  string: Path to MultiQC report
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    def multiqc_reports = multiqc_report.toList()
 
     //
     // Completion email and summary
@@ -129,7 +131,8 @@ workflow PIPELINE_COMPLETION {
                 email_on_fail,
                 plaintext_email,
                 outdir,
-                monochrome_logs
+                monochrome_logs,
+                multiqc_reports.getVal(),
             )
         }
 
@@ -169,11 +172,11 @@ def validateInputSamplesheet(input) {
 // Same fastq files are not allowed to be analyzed multiple times in the same run
 //
 def validateInputSamplesheet2(input) {
-    s = 0
+    def s = 0
     input.size().map{
         s = it
 
-        sunique = 0
+        def sunique = 0
         input.toSet().size().map{
             sunique = it
 
@@ -215,7 +218,7 @@ def toolBibliographyText() {
 }
 
 def methodsDescriptionText(mqc_methods_yaml) {
-    // Convert  to a named map so can be used as with familar NXF ${workflow} variable syntax in the MultiQC YML file
+    // Convert  to a named map so can be used as with familiar NXF ${workflow} variable syntax in the MultiQC YML file
     def meta = [:]
     meta.workflow = workflow.toMap()
     meta["manifest_map"] = workflow.manifest.toMap()
@@ -250,4 +253,3 @@ def methodsDescriptionText(mqc_methods_yaml) {
 
     return description_html.toString()
 }
-
