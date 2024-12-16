@@ -32,10 +32,13 @@ workflow FASTQREPAIR {
 
     // Decouple paired-end reads
     ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
+    ch_decoupled.view()
+
     // Recover fastq.gz and skip *.fastq or *.fq
-    GZRT (
-        ch_decoupled
-    )
+    // GZRT (
+    //     ch_decoupled
+    // )
+    // GZRT.out.fastqrecovered.view()
 
     // // Make fastq compliant and wipe bad characters
     // SCATTER_WIPE_GATHER (
@@ -68,19 +71,19 @@ workflow FASTQREPAIR {
     // )
 
     // Assess QC of all fastq files (both single and paired end)
-    FASTQC (
-        // RENAMER.out.renamed_fastq
-        GZRT.out.fastqrecovered
-    )
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+    // FASTQC (
+    //     // RENAMER.out.renamed_fastq
+    //     GZRT.out.fastqrecovered
+    // )
+    // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
 
-    ch_versions = ch_versions.mix(
-        GZRT.out.versions.first(),
-        // SCATTER_WIPE_GATHER.out.versions.first(),
-        // TRIMMOMATIC.out.versions.first(),
-        // BBMAPREPAIR.out.versions.first(),
-        FASTQC.out.versions.first()
-    )
+    // ch_versions = ch_versions.mix(
+    //     GZRT.out.versions.first(),
+    //     // SCATTER_WIPE_GATHER.out.versions.first(),
+    //     // TRIMMOMATIC.out.versions.first(),
+    //     // BBMAPREPAIR.out.versions.first(),
+    //     FASTQC.out.versions.first()
+    // )
 
     //
     // Collate and save software versions

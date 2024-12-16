@@ -12,7 +12,7 @@
                     },
                     "gzrt": {
                         "branch": "master",
-                        "git_sha": "60fbc3e6e335d1467301086e8a88aefe7aab2770",
+                        "git_sha": "a3276aa6eb520d59a4e18ab16b5554f28b35522d",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
