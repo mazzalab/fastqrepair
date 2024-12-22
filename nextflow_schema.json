@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/master/nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/main/nextflow_schema.json",
     "title": "nf-core/fastqrepair pipeline parameters",
     "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settle reads that became disordered",
     "type": "object",
