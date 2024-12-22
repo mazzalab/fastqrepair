@@ -35,10 +35,10 @@ workflow FASTQREPAIR {
     ch_decoupled.view()
 
     // Recover fastq.gz and skip *.fastq or *.fq
-    // GZRT (
-    //     ch_decoupled
-    // )
-    // GZRT.out.fastqrecovered.view()
+    GZRT (
+        ch_decoupled
+    )
+    GZRT.out.fastqrecovered.view()
 
     // // Make fastq compliant and wipe bad characters
     // SCATTER_WIPE_GATHER (
