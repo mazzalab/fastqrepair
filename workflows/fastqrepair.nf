@@ -5,6 +5,11 @@
 */
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
+include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
+include { GZRT                   } from '../modules/nf-core/gzrt/main'
+include { BBMAPREPAIR            } from '../modules/local/bbmaprepair/main'
+include { RENAMER                } from '../modules/local/renamer/main'
+include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -17,21 +22,68 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_fast
 */
 
 workflow FASTQREPAIR {
-
     take:
     ch_samplesheet // channel: samplesheet read in from --input
-    main:
 
+    main:
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
-    //
-    // MODULE: Run FastQC
-    //
-    FASTQC (
-        ch_samplesheet
+    ch_decoupled = Channel.empty()
+
+    // Decouple paired-end reads
+    ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
+    ch_decoupled.view()
+
+    // Recover fastq.gz and skip *.fastq or *.fq
+    GZRT (
+        ch_decoupled
     )
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    GZRT.out.fastqrecovered.view()
+
+    // // Make fastq compliant and wipe bad characters
+    // SCATTER_WIPE_GATHER (
+    //     GZRT.out.fastqrecovered
+    // )
+
+    // // Run if PAIRED-END reads only!
+    // SCATTER_WIPE_GATHER.out.fixed_fastq
+    //     .branch {
+    //         single_end: it[0].single_end == true
+    //         paired_end: it[0].single_end == false
+    //     }
+    //     .set { filtered_ch }
+
+    // // Remove unpaired reads and reads shorter than 20 nt
+    // TRIMMOMATIC (
+    //     filtered_ch.paired_end.groupTuple()
+    // )
+
+    // // Settle reads pairing (re-pair)
+    // BBMAPREPAIR {
+    //     TRIMMOMATIC.out.trimmed_reads
+    // }
+
+
+    // // Rename final FASTQ and REPORT files and move them into the "pickup" folder
+    // RENAMER (
+    //     filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq),
+    //     SCATTER_WIPE_GATHER.out.report.groupTuple()
+    // )
+
+    // Assess QC of all fastq files (both single and paired end)
+    // FASTQC (
+    //     // RENAMER.out.renamed_fastq
+    //     GZRT.out.fastqrecovered
+    // )
+    // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+
+    // ch_versions = ch_versions.mix(
+    //     GZRT.out.versions.first(),
+    //     // SCATTER_WIPE_GATHER.out.versions.first(),
+    //     // TRIMMOMATIC.out.versions.first(),
+    //     // BBMAPREPAIR.out.versions.first(),
+    //     FASTQC.out.versions.first()
+    // )
 
     //
     // Collate and save software versions
@@ -39,7 +91,7 @@ workflow FASTQREPAIR {
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_'  +  'fastqrepair_software_'  + 'mqc_'  + 'versions.yml',
+            name: 'nf-core_fastqrepair_versions.yml',
             sort: true,
             newLine: true
         ).set { ch_collated_versions }
