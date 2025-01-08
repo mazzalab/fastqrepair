@@ -7,9 +7,8 @@ include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
 include { GZRT                   } from '../modules/nf-core/gzrt/main'
-include { BBMAPREPAIR            } from '../modules/local/bbmaprepair/main'
-include { RENAMER                } from '../modules/local/renamer/main'
-include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
+include { BBMAP_REPAIR            } from '../modules/nf-core/bbmap/repair/main'
+// include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -24,21 +23,35 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_fast
 workflow FASTQREPAIR {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    // TODO: add integrity check in samplesheet (i.e., check that paired fastq files on each line have the same extensions: .gz or .fastq, .fq)
 
     main:
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
-    ch_decoupled = Channel.empty()
 
-    // Decouple paired-end reads
-    ch_decoupled = ch_samplesheet.flatMap { metaData, filePaths -> filePaths.collect { file -> [metaData, file] } }
-    ch_decoupled.view()
+    // branch .gz and non gz files
+    ch_samplesheet.branch { map, fq ->
+        gz_files: fq.first().getExtension() == 'gz'
+        non_gz_files: true
+    } .set { ch_fastq_ext }
 
-    // Recover fastq.gz and skip *.fastq or *.fq
+    // Recover corrupted gz files
     GZRT (
-        ch_decoupled
+        ch_fastq_ext.gz_files
     )
-    GZRT.out.fastqrecovered.view()
+
+    // Join recovered gz files with non-gz files
+    GZRT.out.recovered.concat(ch_fastq_ext.non_gz_files) .set { ch_recovered_fastq }
+    ch_recovered_fastq.view()
+
+    // // Sort single from paired-end reads
+    // GZRT.out.recovered.branch { m,v ->
+    //     single_end: m.single_end == true
+    //     paired_end: true
+    // } .set { ch_decoupled }
+
+
+
 
     // // Make fastq compliant and wipe bad characters
     // SCATTER_WIPE_GATHER (
@@ -128,16 +141,17 @@ workflow FASTQREPAIR {
         )
     )
 
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        []
-    )
+    // MULTIQC (
+    //     ch_multiqc_files.collect(),
+    //     ch_multiqc_config.toList(),
+    //     ch_multiqc_custom_config.toList(),
+    //     ch_multiqc_logo.toList(),
+    //     [],
+    //     []
+    // )
 
-    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    // emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    emit:multiqc_report = [] // To be replaced by the line above
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 }

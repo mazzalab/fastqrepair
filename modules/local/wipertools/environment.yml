@@ -1,7 +1,0 @@
-name: wipertools
-channels:
-  - conda-forge
-  - bfxcss
-  - defaults
-dependencies:
-  - bfxcss::fastqwiper=2024.2.104
