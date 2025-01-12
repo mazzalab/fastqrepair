@@ -30,10 +30,10 @@
                     "help_text": "You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "chunk_size": {
+                "num_splits": {
                     "type": "integer",
-                    "default": 20000000,
-                    "description": "The input fastq file will be split into chunks of this numnber of lines to speedup wiping. The number must be multiple of 4.",
+                    "default": 2,
+                    "description": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "qin": {

@@ -3,16 +3,15 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { FASTQC                 } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { TRIMMOMATIC            } from '../modules/nf-core/trimmomatic/main'
-include { GZRT                   } from '../modules/nf-core/gzrt/main'
+include { FASTQC                  } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
+include { GZRT                    } from '../modules/nf-core/gzrt/main'
 include { BBMAP_REPAIR            } from '../modules/nf-core/bbmap/repair/main'
-// include { SCATTER_WIPE_GATHER    } from '../subworkflows/local/scatter_wipe_gather/main'
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
+include { FASTQ_REPAIR_WIPERTOOLS } from '../subworkflows/local/fastq_repair_wipertools/main'
+include { paramsSummaryMap        } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText  } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,51 +29,44 @@ workflow FASTQREPAIR {
     ch_multiqc_files = Channel.empty()
 
     // branch .gz and non gz files
-    ch_samplesheet.branch { map, fq ->
+    ch_samplesheet
+    | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
-        non_gz_files: true
-    } .set { ch_fastq_ext }
+        non_gz_files: true }
+    | set { ch_fastq_ext }
 
     // Recover corrupted gz files
-    GZRT (
-        ch_fastq_ext.gz_files
-    )
+    GZRT (ch_fastq_ext.gz_files)
 
     // Join recovered gz files with non-gz files
-    GZRT.out.recovered.concat(ch_fastq_ext.non_gz_files) .set { ch_recovered_fastq }
-    ch_recovered_fastq.view()
+    GZRT.out.recovered
+    | concat(ch_fastq_ext.non_gz_files)
+    | set { ch_recovered_fastq }
 
-    // // Sort single from paired-end reads
-    // GZRT.out.recovered.branch { m,v ->
-    //     single_end: m.single_end == true
-    //     paired_end: true
-    // } .set { ch_decoupled }
+    // Make fastq compliant and wipe bad characters
+    FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
+    FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq.view()
 
+    // Run below tools with PAIRED-END reads only!
+    FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
+    | branch {
+        single_end: it[0].single_end == true
+        paired_end: it[0].single_end == false }
+    | set { ch_wiped_fastq }
 
+    // Group paired-reads by 'sample_id' and rename keys
+    ch_wiped_fastq.paired_end
+    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
+    | groupTuple
+    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
+    | set { ch_wiped_paired_fastq }
 
-
-    // // Make fastq compliant and wipe bad characters
-    // SCATTER_WIPE_GATHER (
-    //     GZRT.out.fastqrecovered
-    // )
-
-    // // Run if PAIRED-END reads only!
-    // SCATTER_WIPE_GATHER.out.fixed_fastq
-    //     .branch {
-    //         single_end: it[0].single_end == true
-    //         paired_end: it[0].single_end == false
-    //     }
-    //     .set { filtered_ch }
-
-    // // Remove unpaired reads and reads shorter than 20 nt
-    // TRIMMOMATIC (
-    //     filtered_ch.paired_end.groupTuple()
-    // )
-
-    // // Settle reads pairing (re-pair)
-    // BBMAPREPAIR {
-    //     TRIMMOMATIC.out.trimmed_reads
-    // }
+    // TODO: Make it optional
+    // Settle reads pairing (re-pair)
+    // TODO: Edit module to have "repaired_reads" as output
+    BBMAP_REPAIR (ch_wiped_paired_fastq, false)
+    BBMAP_REPAIR.out.repaired.view()
+    BBMAP_REPAIR.out.singleton.view()
 
 
     // // Rename final FASTQ and REPORT files and move them into the "pickup" folder
@@ -90,13 +82,12 @@ workflow FASTQREPAIR {
     // )
     // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
 
-    // ch_versions = ch_versions.mix(
-    //     GZRT.out.versions.first(),
-    //     // SCATTER_WIPE_GATHER.out.versions.first(),
-    //     // TRIMMOMATIC.out.versions.first(),
-    //     // BBMAPREPAIR.out.versions.first(),
-    //     FASTQC.out.versions.first()
-    // )
+    ch_versions = ch_versions.mix(
+        GZRT.out.versions.first(),
+        FASTQ_REPAIR_WIPERTOOLS.out.versions.first(),
+        BBMAP_REPAIR.out.versions.first()
+        // FASTQC.out.versions.first()
+    )
 
     //
     // Collate and save software versions
@@ -152,8 +143,7 @@ workflow FASTQREPAIR {
 
     // emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     emit:multiqc_report = [] // To be replaced by the line above
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
-
+    versions            = ch_versions // channel: [ path(versions.yml) ]
 }
 
 /*

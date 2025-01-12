@@ -25,11 +25,6 @@
                         "git_sha": "cf17ca47590cc578dfb47db1c2a44ef86f89976d",
                         "installed_by": ["modules"]
                     },
-                    "trimmomatic": {
-                        "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
-                    },
                     "wipertools/fastqgather": {
                         "branch": "master",
                         "git_sha": "b31e778c8480f30ed1b13e1ccbf2e43333f85809",
