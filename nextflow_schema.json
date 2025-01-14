@@ -50,6 +50,12 @@
                     "help_text": "SEQ lines containing characters not listed here will be discarded",
                     "fa_icon": "fas fa-solid fa-arrows-left-right-to-line"
                 },
+                "skip_bbmap_repair": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip the BBMap repair step.",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
