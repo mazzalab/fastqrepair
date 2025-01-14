@@ -28,9 +28,8 @@
 1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
 2. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
 3. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
-3. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-4. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
-
+4. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+5. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
 
 ## Usage
 
