@@ -21,14 +21,16 @@
 
 ## Introduction
 
-**nf-core/fastqrepair** is a bioinformatics pipeline that can be used to recover corrupted `FASTQ.gz` files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered. It takes a `samplesheet` and FASTQ/FASTQ.gz files as input (both single-end and paired-end) and produces clean FASTQ files and a QC report.
+**nf-core/fastqrepair** is a bioinformatics pipeline that can be used to recover corrupted `FASTQ.gz` files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered. It takes a `samplesheet` with FASTQ/FASTQ.gz files as input (both single-end and paired-end) and produces clean FASTQ files and QC reports.
 
-![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.svg)
+![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.png)
 
 1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
-2. Make recovered reads well-formed ([`fastqwiper`](https://github.com/mazzalab/fastqwiper))
-3. Drop unpaired reads ([`trimmomatic`](http://www.usadellab.org/cms/index.php?page=trimmomatic))
-4. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
+2. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
+3. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
+3. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+4. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
+
 
 ## Usage
 
@@ -43,10 +45,10 @@ First, prepare a samplesheet with your input data that looks as follows:
 sample,fastq_1,fastq_2
 mysampleA,sample_R1.fastq.gz,sample_R2.fastq.gz
 mysampleB,sample_R3.fastq.gz,sample_R4.fastq.gz
-mysampleC,sample_R5.fastq.gz
+mysampleC,sample_R5.fastq
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end). Rows with the same sample identifier are not allowed. Row with different sample identifiers but same file names are not allowed.
+Each row represents a fastq file (single-end) or a pair of fastq files (paired-end). Rows with the same sample identifier are not allowed. Rows with different file extensions (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`) are not allowed.
 
 Now, you can run the pipeline using:
 
