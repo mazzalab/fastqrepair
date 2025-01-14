@@ -26,9 +26,9 @@ workflow FASTQREPAIR {
 
     main:
     ch_versions = Channel.empty()
-    ch_multiqc_files = Channel.empty()
 
     // branch .gz and non gz files
+    ch_fastq_ext = Channel.empty()
     ch_samplesheet
     | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
@@ -39,59 +39,59 @@ workflow FASTQREPAIR {
     GZRT (ch_fastq_ext.gz_files)
 
     // Join recovered gz files with non-gz files
+    ch_recovered_fastq = Channel.empty()
     GZRT.out.recovered
     | concat(ch_fastq_ext.non_gz_files)
     | set { ch_recovered_fastq }
 
     // Make fastq compliant and wipe bad characters
     FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
-    FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq.view()
 
-    // Run below tools with PAIRED-END reads only!
-    FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
-    | branch {
-        single_end: it[0].single_end == true
-        paired_end: it[0].single_end == false }
-    | set { ch_wiped_fastq }
+    // Final channel
+    ch_final = FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
 
-    // Group paired-reads by 'sample_id' and rename keys
-    ch_wiped_fastq.paired_end
-    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
-    | groupTuple
-    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
-    | set { ch_wiped_paired_fastq }
+    //
+    // Settle reads pairing (re-pair, optional)
+    if (!params.skip_bbmap_repair) {
+        // Branch single- and paired-end reads for optional analyses
+        ch_wiped_fastq = Channel.empty()
+        FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
+        | branch {
+            single_end: it[0].single_end == true
+            paired_end: it[0].single_end == false }
+        | set { ch_wiped_fastq }
 
-    // TODO: Make it optional
-    // Settle reads pairing (re-pair)
-    // TODO: Edit module to have "repaired_reads" as output
-    BBMAP_REPAIR (ch_wiped_paired_fastq, false)
-    BBMAP_REPAIR.out.repaired.view()
-    BBMAP_REPAIR.out.singleton.view()
+        ch_wiped_paired_fastq = Channel.empty()
 
+        // Group paired-reads by 'sample_id' and rename keys
+        ch_wiped_fastq.paired_end
+        | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
+        | groupTuple
+        | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
+        | set { ch_wiped_paired_fastq }
 
-    // // Rename final FASTQ and REPORT files and move them into the "pickup" folder
-    // RENAMER (
-    //     filtered_ch.single_end.concat(BBMAPREPAIR.out.interleaved_fastq),
-    //     SCATTER_WIPE_GATHER.out.report.groupTuple()
-    // )
+        // Re-pair reads
+        BBMAP_REPAIR (ch_wiped_paired_fastq, false)
+
+        BBMAP_REPAIR.out.repaired.view()
+        BBMAP_REPAIR.out.singleton.view()
+
+        ch_final = BBMAP_REPAIR.out.repaired.concat(ch_wiped_fastq.single_end)
+        ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
+    }
 
     // Assess QC of all fastq files (both single and paired end)
-    // FASTQC (
-    //     // RENAMER.out.renamed_fastq
-    //     GZRT.out.fastqrecovered
-    // )
-    // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-
-    ch_versions = ch_versions.mix(
-        GZRT.out.versions.first(),
-        FASTQ_REPAIR_WIPERTOOLS.out.versions.first(),
-        BBMAP_REPAIR.out.versions.first()
-        // FASTQC.out.versions.first()
-    )
+    FASTQC ( ch_final )
 
     //
     // Collate and save software versions
     //
+    ch_versions = ch_versions.mix(
+        GZRT.out.versions.first(),
+        FASTQ_REPAIR_WIPERTOOLS.out.versions,
+        FASTQC.out.versions.first()
+    )
+
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
@@ -100,15 +100,14 @@ workflow FASTQREPAIR {
             newLine: true
         ).set { ch_collated_versions }
 
-
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_config        = Channel.fromPath(
-        "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config = params.multiqc_config ?
-        Channel.fromPath(params.multiqc_config, checkIfExists: true) :
-        Channel.empty()
+    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+
+    ch_multiqc_config = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
     ch_multiqc_logo          = params.multiqc_logo ?
         Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
         Channel.empty()
@@ -132,17 +131,16 @@ workflow FASTQREPAIR {
         )
     )
 
-    // MULTIQC (
-    //     ch_multiqc_files.collect(),
-    //     ch_multiqc_config.toList(),
-    //     ch_multiqc_custom_config.toList(),
-    //     ch_multiqc_logo.toList(),
-    //     [],
-    //     []
-    // )
+    MULTIQC (
+        ch_multiqc_files.collect(),
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList(),
+        [],
+        []
+    )
 
-    // emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    emit:multiqc_report = [] // To be replaced by the line above
+    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     versions            = ch_versions // channel: [ path(versions.yml) ]
 }
 

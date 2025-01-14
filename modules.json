@@ -22,22 +22,27 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "cf17ca47590cc578dfb47db1c2a44ef86f89976d",
+                        "git_sha": "f80914f78fb7fa1c00b14cfeb29575ee12240d9c",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqgather": {
                         "branch": "master",
-                        "git_sha": "b31e778c8480f30ed1b13e1ccbf2e43333f85809",
+                        "git_sha": "c9e9241cf86666d6d5f30dab8ccb1bfeff5573df",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqscatter": {
                         "branch": "master",
-                        "git_sha": "b31e778c8480f30ed1b13e1ccbf2e43333f85809",
+                        "git_sha": "c9e9241cf86666d6d5f30dab8ccb1bfeff5573df",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqwiper": {
                         "branch": "master",
-                        "git_sha": "b31e778c8480f30ed1b13e1ccbf2e43333f85809",
+                        "git_sha": "c9e9241cf86666d6d5f30dab8ccb1bfeff5573df",
+                        "installed_by": ["modules"]
+                    },
+                    "wipertools/reportgather": {
+                        "branch": "master",
+                        "git_sha": "c9e9241cf86666d6d5f30dab8ccb1bfeff5573df",
                         "installed_by": ["modules"]
                     }
                 }
