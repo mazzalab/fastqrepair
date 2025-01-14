@@ -88,7 +88,7 @@ input: "./samplesheet.csv"
 outdir: "./results/"
 ```
 
-Optional parameters are described in the [Parameters](https://nf-co.re/fastqrepair/dev/parameters/) tab.
+Optional parameters are described in the [Parameters](https://nf-co.re/fastqrepair/parameters/) tab.
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
