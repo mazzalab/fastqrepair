@@ -68,7 +68,7 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
         WIPERTOOLS_FASTQSCATTER.out.versions.first(),
         WIPERTOOLS_FASTQWIPER.out.versions.first(),
         WIPERTOOLS_FASTQGATHER.out.versions.first(),
-        WIPERTOOLS_REPORTGATHER.out.versions.first()
+        WIPERTOOLS_REPORTGATHER.out.versions.first()  //TODO: check if reportgather outputs a valid version
     )
 
     emit:

@@ -73,8 +73,8 @@ workflow FASTQREPAIR {
         // Re-pair reads
         BBMAP_REPAIR (ch_wiped_paired_fastq, false)
 
-        BBMAP_REPAIR.out.repaired.view()
-        BBMAP_REPAIR.out.singleton.view()
+        // BBMAP_REPAIR.out.repaired.view()
+        // BBMAP_REPAIR.out.singleton.view()
 
         ch_final = BBMAP_REPAIR.out.repaired.concat(ch_wiped_fastq.single_end)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
