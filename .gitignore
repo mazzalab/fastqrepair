@@ -10,3 +10,4 @@ null/
 dataset/
 .devcontainer/dev/
 .vscode/
+.nf-test/

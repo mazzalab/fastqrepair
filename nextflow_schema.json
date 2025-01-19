@@ -148,6 +148,13 @@
                     "fa_icon": "fas fa-copy",
                     "hidden": false
                 },
+                "repaired_folder": {
+                    "type": "string",
+                    "default": "repaired",
+                    "description": "Name of a subfolder of ${outdir} where the repaired files will be saved.",
+                    "fa_icon": "fas fa-folder-open",
+                    "hidden": false
+                },
                 "email_on_fail": {
                     "type": "string",
                     "description": "Email address for completion summary, only when pipeline fails.",

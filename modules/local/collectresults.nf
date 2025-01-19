@@ -6,8 +6,8 @@ process COLLECTRESULTS {
     tuple val(meta), path(repaired_fastq)
 
     output:
-    path("*.gz")        , emit: renamed_fastq
-    path "versions.yml" , emit: versions
+    tuple val(meta), path("*.gz")       , emit: renamed_fastq
+    path "versions.yml"                 , emit: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -15,7 +15,7 @@ nextflow_pipeline {
                 outdir                  = "$outputDir/30reads"
 
                 publish_dir_all_tools   = true
-                chunk_size              = 40  // 40 lines per chunk
+                num_splits              = 2
 
                 max_cpus                = 2
                 max_memory              = '1.GB'

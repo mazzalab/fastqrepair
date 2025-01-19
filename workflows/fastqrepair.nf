@@ -106,12 +106,12 @@ workflow FASTQREPAIR {
             fastqList.collect { fastq -> tuple(meta, fastq) } :
             [tuple(meta, fastqList)]
     }
-    collected_fastq.view()
+    // collected_fastq.view()
 
     COLLECTRESULTS(
         collected_fastq
     )
-    COLLECTRESULTS.out.renamed_fastq.view()
+    // COLLECTRESULTS.out.renamed_fastq.view()
 
     //
     // Assess QC of all fastq files (both single and paired end)

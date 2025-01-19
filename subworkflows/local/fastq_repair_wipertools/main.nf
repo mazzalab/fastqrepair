@@ -11,8 +11,12 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     main:
     // decouple fastq files [sample_id = id; id is the file name]
     ch_decoupled = ch_fastq.flatMap {
-        meta, fastqList -> fastqList.collect {
-            fastq -> tuple("id": (fastq.name.endsWith(".gz") ? fastq.getBaseName(2): fastq.baseName), "sample_id":meta.id, "single_end": meta.single_end, fastq) } }
+        meta, fastqList -> fastqList instanceof List
+        ? fastqList.collect { fastq -> tuple("id": (fastq.name.endsWith(".gz") ? fastq.getBaseName(2): fastq.baseName), "sample_id":meta.id, "single_end": meta.single_end, fastq) }
+        : [tuple("id": (fastqList.name.endsWith(".gz") ? fastqList.getBaseName(2): fastqList.baseName), "sample_id":meta.id, "single_end": meta.single_end, fastqList)]
+    }
+
+    ch_decoupled.view()
 
     // Split fastq files into chunks
     WIPERTOOLS_FASTQSCATTER(
