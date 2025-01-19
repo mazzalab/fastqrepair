@@ -25,7 +25,8 @@ workflow FASTQREPAIR {
     // TODO: add integrity check in samplesheet (i.e., check that paired fastq files on each line have the same extensions: .gz or .fastq, .fq)
 
     main:
-    ch_versions = Channel.empty()
+    ch_final = Channel.empty()      // channel: repaired fastq files
+    ch_versions = Channel.empty()   // channel: versions of the software used in the pipeline
 
     // branch .gz and non gz files
     ch_fastq_ext = Channel.empty()
@@ -39,45 +40,45 @@ workflow FASTQREPAIR {
     GZRT (ch_fastq_ext.gz_files)
 
     // Join recovered gz files with non-gz files
-    ch_recovered_fastq = Channel.empty()
     GZRT.out.recovered
-    | concat(ch_fastq_ext.non_gz_files)
+    | concat ( ch_fastq_ext.non_gz_files )
     | set { ch_recovered_fastq }
 
     // Make fastq compliant and wipe bad characters
     FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
 
-    // Final channel
-    ch_final = FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
+    // *********************************************************
+    // Branch single- and paired-end reads for optional analyses
+    FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
+    | branch {
+        single_end: it[0].single_end == true
+        paired_end: it[0].single_end == false }
+    | set { ch_repaired_fastq }
+
+    // Group paired-reads by 'sample_id' and rename keys
+    ch_repaired_fastq.paired_end
+    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
+    | groupTuple
+    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
+    | set { ch_repaired_fastq_paired_end }
+    // *********************************************************
 
     //
     // Settle reads pairing (re-pair, optional)
     if (!params.skip_bbmap_repair) {
-        // Branch single- and paired-end reads for optional analyses
-        ch_wiped_fastq = Channel.empty()
-        FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
-        | branch {
-            single_end: it[0].single_end == true
-            paired_end: it[0].single_end == false }
-        | set { ch_wiped_fastq }
-
-        ch_wiped_paired_fastq = Channel.empty()
-
-        // Group paired-reads by 'sample_id' and rename keys
-        ch_wiped_fastq.paired_end
-        | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
-        | groupTuple
-        | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
-        | set { ch_wiped_paired_fastq }
-
         // Re-pair reads
-        BBMAP_REPAIR (ch_wiped_paired_fastq, false)
+        BBMAP_REPAIR (ch_repaired_fastq_paired_end, false)
 
-        // BBMAP_REPAIR.out.repaired.view()
-        // BBMAP_REPAIR.out.singleton.view()
+        BBMAP_REPAIR.out.repaired
+        | concat ( BBMAP_REPAIR.out.singleton )
+        | groupTuple
+        | map { meta, fq -> [meta, fq.flatten()] }
+        | set { ch_repaired_fastq_paired_end_singleton }
 
-        ch_final = BBMAP_REPAIR.out.repaired.concat(ch_wiped_fastq.single_end)
+        ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq.single_end)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
+    } else {
+        ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
     }
 
     // Assess QC of all fastq files (both single and paired end)

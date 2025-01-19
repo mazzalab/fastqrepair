@@ -140,7 +140,7 @@
                     "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
-                "publish_dir_all_tools": {
+                "publish_all_tools": {
                     "type": "boolean",
                     "default": false,
                     "description": "To specify whether to publish all pipeline intermediate results to output directory.",
