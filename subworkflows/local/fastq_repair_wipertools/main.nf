@@ -16,8 +16,6 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
         : [tuple("id": (fastqList.name.endsWith(".gz") ? fastqList.getBaseName(2): fastqList.baseName), "sample_id":meta.id, "single_end": meta.single_end, fastqList)]
     }
 
-    ch_decoupled.view()
-
     // Split fastq files into chunks
     WIPERTOOLS_FASTQSCATTER(
         ch_decoupled,
