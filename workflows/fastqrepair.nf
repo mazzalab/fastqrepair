@@ -8,6 +8,7 @@ include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
 include { BBMAP_REPAIR            } from '../modules/nf-core/bbmap/repair/main'
 include { FASTQ_REPAIR_WIPERTOOLS } from '../subworkflows/local/fastq_repair_wipertools/main'
+include { COLLECTRESULTS          } from '../modules/local/collectresults'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -36,52 +37,85 @@ workflow FASTQREPAIR {
         non_gz_files: true }
     | set { ch_fastq_ext }
 
+    //
     // Recover corrupted gz files
+    //
     GZRT (ch_fastq_ext.gz_files)
 
     // Join recovered gz files with non-gz files
+    ch_recovered_fastq = Channel.empty()
     GZRT.out.recovered
     | concat ( ch_fastq_ext.non_gz_files )
     | set { ch_recovered_fastq }
 
+    //
     // Make fastq compliant and wipe bad characters
+    //
     FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
 
-    // *********************************************************
+    //
     // Branch single- and paired-end reads for optional analyses
+    ch_repaired_fastq = Channel.empty()
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
     | branch {
         single_end: it[0].single_end == true
         paired_end: it[0].single_end == false }
     | set { ch_repaired_fastq }
 
+    // Rename meta.id for single-end reads
+    ch_repaired_fastq_single_end = Channel.empty()
+    ch_repaired_fastq.single_end
+    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
+    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
+    | set { ch_repaired_fastq_single_end }
+
     // Group paired-reads by 'sample_id' and rename keys
+    ch_repaired_fastq_paired_end = Channel.empty()
     ch_repaired_fastq.paired_end
     | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | groupTuple
     | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
     | set { ch_repaired_fastq_paired_end }
-    // *********************************************************
+    //
 
     //
     // Settle reads pairing (re-pair, optional)
+    //
     if (!params.skip_bbmap_repair) {
         // Re-pair reads
         BBMAP_REPAIR (ch_repaired_fastq_paired_end, false)
 
+        ch_repaired_fastq_paired_end_singleton = Channel.empty()
         BBMAP_REPAIR.out.repaired
         | concat ( BBMAP_REPAIR.out.singleton )
         | groupTuple
         | map { meta, fq -> [meta, fq.flatten()] }
         | set { ch_repaired_fastq_paired_end_singleton }
 
-        ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq.single_end)
+        ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq_single_end)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
     } else {
-        ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
+        ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq_single_end)
     }
 
+    //
+    // local MODULE: COLLECTRESULTS
+    //
+    collected_fastq = ch_final.flatMap { meta, fastqList ->
+        fastqList instanceof List ?
+            fastqList.collect { fastq -> tuple(meta, fastq) } :
+            [tuple(meta, fastqList)]
+    }
+    collected_fastq.view()
+
+    COLLECTRESULTS(
+        collected_fastq
+    )
+    COLLECTRESULTS.out.renamed_fastq.view()
+
+    //
     // Assess QC of all fastq files (both single and paired end)
+    //
     FASTQC ( ch_final )
 
     //
@@ -90,7 +124,8 @@ workflow FASTQREPAIR {
     ch_versions = ch_versions.mix(
         GZRT.out.versions.first(),
         FASTQ_REPAIR_WIPERTOOLS.out.versions,
-        FASTQC.out.versions.first()
+        FASTQC.out.versions.first(),
+        COLLECTRESULTS.out.versions.first()
     )
 
     softwareVersionsToYAML(ch_versions)
