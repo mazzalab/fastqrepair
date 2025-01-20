@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/main/nextflow_schema.json",
     "title": "nf-core/fastqrepair pipeline parameters",
-    "description": "A pipeline to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving",
+    "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settle reads that became disordered",
     "type": "object",
     "$defs": {
         "input_output_options": {
@@ -26,8 +26,35 @@
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "description": "The output directory where the results will be saved.",
+                    "help_text": "You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
+                },
+                "num_splits": {
+                    "type": "integer",
+                    "default": 2,
+                    "description": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
+                "qin": {
+                    "type": "integer",
+                    "enum": [33, 64],
+                    "default": 33,
+                    "description": "the ASCII offset (33=Sanger, 64=old Solexa).",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
+                "alphabet": {
+                    "type": "string",
+                    "default": "ACGTN",
+                    "description": "Allowed character in the SEQ line.",
+                    "help_text": "SEQ lines containing characters not listed here will be discarded",
+                    "fa_icon": "fas fa-solid fa-arrows-left-right-to-line"
+                },
+                "skip_bbmap_repair": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip the BBMap repair step.",
+                    "fa_icon": "fas fa-puzzle-piece"
                 },
                 "email": {
                     "type": "string",
@@ -113,6 +140,21 @@
                     "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
+                "publish_all_tools": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "To specify whether to publish all pipeline intermediate results to output directory.",
+                    "help_text": "This option tells the pipeline whether to publish all intermediate results to output directory.",
+                    "fa_icon": "fas fa-copy",
+                    "hidden": false
+                },
+                "repaired_folder": {
+                    "type": "string",
+                    "default": "repaired",
+                    "description": "Name of a subfolder of ${outdir} where the repaired files will be saved.",
+                    "fa_icon": "fas fa-folder-open",
+                    "hidden": false
+                },
                 "email_on_fail": {
                     "type": "string",
                     "description": "Email address for completion summary, only when pipeline fails.",
@@ -165,6 +207,16 @@
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
                     "fa_icon": "fas fa-cog"
+                },
+                "multiqc_replace_names": {
+                    "type": "string",
+                    "description": "Optional two-column sample renaming file. First column a set of patterns, second column a set of corresponding replacements. Passed via MultiQC's `--replace-names` option.",
+                    "fa_icon": "far fa-file-code"
+                },
+                "multiqc_sample_names": {
+                    "type": "string",
+                    "description": "Optional TSV file with headers, passed to the MultiQC --sample_names argument.",
+                    "fa_icon": "far fa-file-code"
                 },
                 "validate_params": {
                     "type": "boolean",
