@@ -43,10 +43,10 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     WIPERTOOLS_FASTQWIPER.out.wiped_fastq
     | map { meta, fq -> [meta.subMap('mate_id', 'sample_id', 'single_end'), fq]}
     | groupTuple
-    | map { meta, fq -> [['id':meta.mate_id+'_wiped', 'sample_id':meta.sample_id, 'single_end':meta.single_end], fq]}
+    | map { meta, fq -> [['id':meta.mate_id, 'sample_id':meta.sample_id, 'single_end':meta.single_end], fq]}
     | set { ch_cleaned_fastq }
 
-    // Gather fastq files
+    // gather fastq files
     WIPERTOOLS_FASTQGATHER(
         ch_cleaned_fastq
     )
@@ -56,13 +56,17 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     WIPERTOOLS_FASTQWIPER.out.report
     | map { meta, report -> [meta.subMap('mate_id', 'sample_id', 'single_end'), report]}
     | groupTuple
-    | map { meta, report -> [['id':meta.mate_id+'_wiped', 'sample_id':meta.sample_id, 'single_end':meta.single_end], report]}
+    | map { meta, report -> [['id':meta.mate_id, 'sample_id':meta.sample_id, 'single_end':meta.single_end], report]}
     | set { ch_gathered_report }
 
-    // Gather report files
+    // gather report files and replace meta.id with meta.sample_id
+    final_reports = Channel.empty()
     WIPERTOOLS_REPORTGATHER(
         ch_gathered_report
     )
+    WIPERTOOLS_REPORTGATHER.out.gathered_report
+    | map { meta, report -> [['id':meta.sample_id, 'single_end':meta.single_end], report]}
+    | set { final_reports }
 
     // gather versions
     ch_versions = Channel.empty()
@@ -74,7 +78,7 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     )
 
     emit:
-    wiped_fastq = WIPERTOOLS_FASTQGATHER.out.gathered_fastq     // channel: [ val(meta), [ .fastq|.fastq.gz ] ]
-    report      = WIPERTOOLS_REPORTGATHER.out.gathered_report   // channel: [ val(meta), [ .txt ] ]
-    versions    = ch_versions                                   // channel: [ versions.yml ]
+    wiped_fastq = WIPERTOOLS_FASTQGATHER.out.gathered_fastq  // channel: [ val(meta), [ .fastq|.fastq.gz ] ]
+    report      = final_reports                              // channel: [ val(meta), [ .txt ] ]
+    versions    = ch_versions                                // channel: [ versions.yml ]
 }

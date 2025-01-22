@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bbmap/repair": {
                         "branch": "master",
-                        "git_sha": "70538021b9b92958afa73c697d0d5decea7aa9ca",
+                        "git_sha": "4c81a35b9f817661af684a50dec2a5a3eb297df2",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {

@@ -8,7 +8,8 @@ include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
 include { BBMAP_REPAIR            } from '../modules/nf-core/bbmap/repair/main'
 include { FASTQ_REPAIR_WIPERTOOLS } from '../subworkflows/local/fastq_repair_wipertools/main'
-include { COLLECTRESULTS          } from '../modules/local/collectresults'
+include { COPYRESULTS             } from '../modules/local/copyresults'
+include { COPYREPORTS             } from '../modules/local/copyreports'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -32,7 +33,7 @@ workflow FASTQREPAIR {
     // branch .gz and non gz files
     ch_fastq_ext = Channel.empty()
     ch_samplesheet
-    | branch { _map, fq ->
+    | branch { map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
         non_gz_files: true }
     | set { ch_fastq_ext }
@@ -51,30 +52,20 @@ workflow FASTQREPAIR {
     //
     // Make fastq compliant and wipe bad characters
     //
-    FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
-
-    //
-    // Branch single- and paired-end reads for optional analyses
     ch_repaired_fastq = Channel.empty()
+    FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
+    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
+    | map { meta, fq -> [['id':meta.sample_id, 'single_end':meta.single_end], fq]}
     | branch {
         single_end: it[0].single_end == true
         paired_end: it[0].single_end == false }
     | set { ch_repaired_fastq }
 
-    // Rename meta.id for single-end reads
-    ch_repaired_fastq_single_end = Channel.empty()
-    ch_repaired_fastq.single_end
-    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
-    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
-    | set { ch_repaired_fastq_single_end }
-
     // Group paired-reads by 'sample_id' and rename keys
     ch_repaired_fastq_paired_end = Channel.empty()
     ch_repaired_fastq.paired_end
-    | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | groupTuple
-    | map { meta, fq -> [['id':meta.sample_id + '_recovered_wiped', 'single_end':meta.single_end], fq]}
     | set { ch_repaired_fastq_paired_end }
     //
 
@@ -92,26 +83,30 @@ workflow FASTQREPAIR {
         | map { meta, fq -> [meta, fq.flatten()] }
         | set { ch_repaired_fastq_paired_end_singleton }
 
-        ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq_single_end)
+        ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq.single_end)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
     } else {
-        ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq_single_end)
+        ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
     }
 
     //
-    // local MODULE: COLLECTRESULTS
+    // local MODULE: COPYRESULTS
     //
-    collected_fastq = ch_final.flatMap { meta, fastqList ->
-        fastqList instanceof List ?
-            fastqList.collect { fastq -> tuple(meta, fastq) } :
-            [tuple(meta, fastqList)]
-    }
-    // collected_fastq.view()
+    collected_fastq = Channel.empty()
+    ch_final
+    | flatMap { meta, fastqList ->
+        fastqList instanceof List
+        ? fastqList.collect { fastq -> tuple(meta, fastq) }
+        : [tuple(meta, fastqList)]
+        }
+    | set { collected_fastq }
 
-    COLLECTRESULTS(
+    COPYRESULTS (
         collected_fastq
     )
-    // COLLECTRESULTS.out.renamed_fastq.view()
+    COPYREPORTS (
+        FASTQ_REPAIR_WIPERTOOLS.out.report
+    )
 
     //
     // Assess QC of all fastq files (both single and paired end)
@@ -125,7 +120,8 @@ workflow FASTQREPAIR {
         GZRT.out.versions.first(),
         FASTQ_REPAIR_WIPERTOOLS.out.versions,
         FASTQC.out.versions.first(),
-        COLLECTRESULTS.out.versions.first()
+        COPYRESULTS.out.versions.first(),
+        COPYREPORTS.out.versions.first()
     )
 
     softwareVersionsToYAML(ch_versions)
@@ -177,7 +173,7 @@ workflow FASTQREPAIR {
     )
 
     emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions            = ch_versions // channel: [ path(versions.yml) ]
+    versions            = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*
