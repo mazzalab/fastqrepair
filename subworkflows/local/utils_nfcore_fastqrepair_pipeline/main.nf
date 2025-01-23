@@ -34,7 +34,6 @@ workflow PIPELINE_INITIALISATION {
     input             //  string: Path to input samplesheet
 
     main:
-
     ch_versions = Channel.empty()
 
     //
@@ -90,7 +89,7 @@ workflow PIPELINE_INITIALISATION {
     //
     // Check that any fastq file is not analyzed multiple times
     //
-    validateInputSamplesheet2(ch_samplesheet.map{ meta, fastq -> fastq}.collect())
+    validateConcordantExtensionsInSamplesheet(ch_samplesheet)
 
     emit:
     samplesheet = ch_samplesheet
@@ -171,21 +170,12 @@ def validateInputSamplesheet(input) {
 //
 // Same fastq files are not allowed to be analyzed multiple times in the same run
 //
-def validateInputSamplesheet2(input) {
-    def s = 0
-    input.size().map{
-        s = it
-
-        def sunique = 0
-        input.toSet().size().map{
-            sunique = it
-
-            if(s != sunique){
-                error("\nPlease check input samplesheet -> Multiple runs of a fastq file are not allowed")
-            }
-        }
-    }
+def validateConcordantExtensionsInSamplesheet(samplesheet) {
+    // Collect the sample IDs of problematic entries
+    def wrong_samples = samplesheet.filter { meta, fastq -> !meta.single_end && fastq[0] && fastq[1] && fastq[0].extension != fastq[1].extension }
+    wrong_samples.subscribe { meta, fastq -> error("Please check input samplesheet -> Paired-end fastq files must have the same extension for ${meta.id}") }
 }
+
 
 //
 // Generate methods description for MultiQC
