@@ -151,6 +151,9 @@ workflow PIPELINE_COMPLETION {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+import java.util.zip.GZIPInputStream
+import java.nio.file.Path
+import java.nio.file.Files
 
 //
 // Validate channels from input samplesheet
@@ -176,6 +179,20 @@ def validateConcordantExtensionsInSamplesheet(samplesheet) {
     wrong_samples.subscribe { meta, fastq -> error("Please check input samplesheet -> Paired-end fastq files must have the same extension for ${meta.id}") }
 }
 
+//
+// Check if a fastq file is empty
+//
+def isFastqFileEmpty(Path fastqFilePath) {
+    if (fastqFilePath.toString().endsWith('.gz')) {
+        try (GZIPInputStream gis = new GZIPInputStream(Files.newInputStream(fastqFilePath))) {
+            return gis.read() == -1
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading gzipped file: ${fastqFilePath}", e)
+        }
+    } else {
+        return Files.size(fastqFilePath) == 0 || Files.size(fastqFilePath) == -1
+    }
+}
 
 //
 // Generate methods description for MultiQC
@@ -184,11 +201,11 @@ def toolCitationText() {
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
     def citation_text = [
             "Tools used in the workflow included:",
-            "The gzip Recovery Toolkit (https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html),",
-            "FastqWiper (https://github.com/mazzalab/fastqwiper),",
-            "Trimmomatic (Bolger et al. 2014),",
-            "BBMap (https://sourceforge.net/projects/bbmap/),",
-            "FastQC (Andrews 2010)"
+            "The <a href='https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html' target='_blank'>gzip Recovery Toolkit</a>,",
+            "<a href='https://github.com/mazzalab/fastqwiper' target='_blank'>FastqWiper</a>,",
+            "<a href='https://sourceforge.net/projects/bbmap/' target='_blank'>BBMap</a>,",
+            "<a href='https://www.bioinformatics.babraham.ac.uk/projects/fastqc/' target='_blank'>FastQC</a> (Andrews 2010)",
+            "<a href='https://github.com/MultiQC/MultiQC' target='_blank'>MultiQC</a> (Ewels et al. 2016)",
         ].join(' ').trim()
 
     return citation_text
@@ -199,9 +216,9 @@ def toolBibliographyText() {
     def reference_text = [
             "<li>Renn, A. M. (2013). The gzip Recovery Toolkit, URL: https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html</li>",
             "<li>Mazza, T. (2024). FastqWiper, URL: https://github.com/mazzalab/fastqwiper</li>",
-            "<li>Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, 2014 Aug 1;30(15):2114-20</li>",
             "<li>Bushnell B. (2024). BBMap, URL: http://sourceforge.net/projects/bbmap/</li>",
             "<li>Andrews S, (2010). FastQC, URL: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)</li>",
+            "<li>Ewels P, Magnusson M, Lundin S, Käller M. (2016). MultiQC, URL: https://github.com/MultiQC/MultiQC</li>"
         ].join(' ').trim()
 
     return reference_text

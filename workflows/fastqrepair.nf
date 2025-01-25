@@ -14,6 +14,8 @@ include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText  } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
+include { isFastqFileEmpty        } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,7 +26,6 @@ include { methodsDescriptionText  } from '../subworkflows/local/utils_nfcore_fas
 workflow FASTQREPAIR {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
-    // TODO: add integrity check in samplesheet (i.e., check that paired fastq files on each line have the same extensions: .gz or .fastq, .fq)
 
     main:
     ch_final = Channel.empty()      // channel: repaired fastq files
@@ -43,17 +44,40 @@ workflow FASTQREPAIR {
     //
     GZRT (ch_fastq_ext.gz_files)
 
-    // Join recovered gz files with non-gz files
-    ch_recovered_fastq = Channel.empty()
+    // Join recovered gz files with non-gz files and filter empty files out
+    ch_tobewiped_fastq = Channel.empty()
     GZRT.out.recovered
     | concat ( ch_fastq_ext.non_gz_files )
-    | set { ch_recovered_fastq }
+    | filter { meta, fileList -> meta.single_end
+        ? fileList instanceof List ? !isFastqFileEmpty(fileList[0]) : !isFastqFileEmpty(fileList)
+        : !isFastqFileEmpty(fileList[0]) && !isFastqFileEmpty(fileList[1])}
+    | set { ch_tobewiped_fastq }
+
+    // If all input files are empty, then skip the rest of the pipeline
+    ch_tobewiped_fastq
+    | ifEmpty {
+        error "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline."
+        // log.warn "No non-empty FASTQ files found. Skipping the rest of the pipeline."
+    }
+
+    // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
+    ch_samplesheet.map { meta, _ -> meta.id }
+        .collect()
+        .set { all_ids }
+
+    // Extract meta.id from ch_subset and collect into a list
+    ch_tobewiped_fastq.map { meta, _ -> meta.id }
+        .collect()
+        .set { subset_ids }
+
+    all_ids.minus(subset_ids).subscribe{ id_list -> log.warn "FASTQ files with the following meta.ids are empty: ${id_list.join(', ')}" }
+    //
 
     //
     // Make fastq compliant and wipe bad characters
     //
     ch_repaired_fastq = Channel.empty()
-    FASTQ_REPAIR_WIPERTOOLS (ch_recovered_fastq)
+    FASTQ_REPAIR_WIPERTOOLS (ch_tobewiped_fastq)
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
     | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | map { meta, fq -> [['id':meta.sample_id, 'single_end':meta.single_end], fq]}
