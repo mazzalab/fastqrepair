@@ -33,6 +33,7 @@
                 "num_splits": {
                     "type": "integer",
                     "default": 2,
+                    "pattern": "^[1-9]\\d*$",
                     "description": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
@@ -40,33 +41,37 @@
                     "type": "integer",
                     "enum": [33, 64],
                     "default": 33,
-                    "description": "the ASCII offset (33=Sanger, 64=old Solexa).",
+                    "description": "the ASCII offset for BBMap (33=Sanger, 64=old Solexa).",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "alphabet": {
                     "type": "string",
                     "default": "ACGTN",
-                    "description": "Allowed character in the SEQ line.",
-                    "help_text": "SEQ lines containing characters not listed here will be discarded",
+                    "pattern": "^[^0-9]+$",
+                    "description": "Allowed character in the SEQ line for Wipertools.",
+                    "help_text": "SEQ lines containing characters not listed here will be discarded by Wipertools",
                     "fa_icon": "fas fa-solid fa-arrows-left-right-to-line"
                 },
                 "skip_bbmap_repair": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Skip the BBMap repair step.",
+                    "description": "Skip the BBMap re-pair step.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
-                "email": {
-                    "type": "string",
-                    "description": "Email address for completion summary.",
-                    "fa_icon": "fas fa-envelope",
-                    "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                "publish_all_tools": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "To specify whether to publish all pipeline intermediate results to output directory.",
+                    "help_text": "This option tells the pipeline whether to publish all intermediate results in the output directory.",
+                    "fa_icon": "fas fa-copy",
+                    "hidden": false
                 },
-                "multiqc_title": {
+                "repaired_folder": {
                     "type": "string",
-                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
+                    "default": "repaired",
+                    "description": "Name of a subfolder of ${outdir} where the repaired files will be saved.",
+                    "fa_icon": "fas fa-folder-open",
+                    "hidden": false
                 }
             }
         },
@@ -140,21 +145,6 @@
                     "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
-                "publish_all_tools": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "To specify whether to publish all pipeline intermediate results to output directory.",
-                    "help_text": "This option tells the pipeline whether to publish all intermediate results to output directory.",
-                    "fa_icon": "fas fa-copy",
-                    "hidden": false
-                },
-                "repaired_folder": {
-                    "type": "string",
-                    "default": "repaired",
-                    "description": "Name of a subfolder of ${outdir} where the repaired files will be saved.",
-                    "fa_icon": "fas fa-folder-open",
-                    "hidden": false
-                },
                 "email_on_fail": {
                     "type": "string",
                     "description": "Email address for completion summary, only when pipeline fails.",
@@ -168,6 +158,18 @@
                     "description": "Send plain-text email instead of HTML.",
                     "fa_icon": "fas fa-remove-format",
                     "hidden": true
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email address for completion summary.",
+                    "fa_icon": "fas fa-envelope",
+                    "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
+                    "fa_icon": "fas fa-file-signature"
                 },
                 "max_multiqc_email_size": {
                     "type": "string",

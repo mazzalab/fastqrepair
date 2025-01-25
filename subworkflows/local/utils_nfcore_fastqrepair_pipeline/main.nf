@@ -87,7 +87,7 @@ workflow PIPELINE_INITIALISATION {
         .set { ch_samplesheet }
 
     //
-    // Check that any fastq file is not analyzed multiple times
+    // Check that paired-end fastq files have the same file extensions
     //
     validateConcordantExtensionsInSamplesheet(ch_samplesheet)
 
