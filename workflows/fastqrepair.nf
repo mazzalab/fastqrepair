@@ -70,7 +70,7 @@ workflow FASTQREPAIR {
         .collect()
         .set { subset_ids }
 
-    all_ids.minus(subset_ids).subscribe{ id_list -> log.warn "FASTQ files with the following meta.ids are empty: ${id_list.join(', ')}" }
+    all_ids.minus(subset_ids).subscribe{ id_list -> if (id_list.size > 0) log.warn "FASTQ files with the following meta.ids are empty: ${id_list.join(', ')}" }
     //
 
     //

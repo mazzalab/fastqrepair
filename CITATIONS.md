@@ -18,13 +18,9 @@
 
 > Renn, A. M. (2013). The gzip Recovery Toolkit [Online].
 
-- [WiperTools](https://github.com/mazzalab/fastqwiper)
+- [Wipertools](https://github.com/mazzalab/fastqwiper)
 
-> Mazza, T. (2024). WiperTools. [![DOI](https://zenodo.org/badge/325529896.svg)](https://doi.org/10.5281/zenodo.14176147){: style="float:right"}
-
-- [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
-
-> Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, 2014 Aug 1;30(15):2114-20
+> Mazza, T. (2025). Wipertools. [![DOI](https://zenodo.org/badge/325529896.svg)](https://doi.org/10.5281/zenodo.14176147){: style="float:right"}
 
 - [BBMap](http://sourceforge.net/projects/bbmap/)
 
@@ -38,20 +34,20 @@
 
 - [Anaconda](https://anaconda.com)
 
-  > Anaconda Software Distribution. Computer software. Vers. 2-2.4.0. Anaconda, Nov. 2016. Web.
+> Anaconda Software Distribution. Computer software. Vers. 2-2.4.0. Anaconda, Nov. 2016. Web.
 
 - [Bioconda](https://pubmed.ncbi.nlm.nih.gov/29967506/)
 
-  > Grüning B, Dale R, Sjödin A, Chapman BA, Rowe J, Tomkins-Tinch CH, Valieris R, Köster J; Bioconda Team. Bioconda: sustainable and comprehensive software distribution for the life sciences. Nat Methods. 2018 Jul;15(7):475-476. doi: 10.1038/s41592-018-0046-7. PubMed PMID: 29967506.
+> Grüning B, Dale R, Sjödin A, Chapman BA, Rowe J, Tomkins-Tinch CH, Valieris R, Köster J; Bioconda Team. Bioconda: sustainable and comprehensive software distribution for the life sciences. Nat Methods. 2018 Jul;15(7):475-476. doi: 10.1038/s41592-018-0046-7. PubMed PMID: 29967506.
 
 - [BioContainers](https://pubmed.ncbi.nlm.nih.gov/28379341/)
 
-  > da Veiga Leprevost F, Grüning B, Aflitos SA, Röst HL, Uszkoreit J, Barsnes H, Vaudel M, Moreno P, Gatto L, Weber J, Bai M, Jimenez RC, Sachsenberg T, Pfeuffer J, Alvarez RV, Griss J, Nesvizhskii AI, Perez-Riverol Y. BioContainers: an open-source and community-driven framework for software standardization. Bioinformatics. 2017 Aug 15;33(16):2580-2582. doi: 10.1093/bioinformatics/btx192. PubMed PMID: 28379341; PubMed Central PMCID: PMC5870671.
+> da Veiga Leprevost F, Grüning B, Aflitos SA, Röst HL, Uszkoreit J, Barsnes H, Vaudel M, Moreno P, Gatto L, Weber J, Bai M, Jimenez RC, Sachsenberg T, Pfeuffer J, Alvarez RV, Griss J, Nesvizhskii AI, Perez-Riverol Y. BioContainers: an open-source and community-driven framework for software standardization. Bioinformatics. 2017 Aug 15;33(16):2580-2582. doi: 10.1093/bioinformatics/btx192. PubMed PMID: 28379341; PubMed Central PMCID: PMC5870671.
 
 - [Docker](https://dl.acm.org/doi/10.5555/2600239.2600241)
 
-  > Merkel, D. (2014). Docker: lightweight linux containers for consistent development and deployment. Linux Journal, 2014(239), 2. doi: 10.5555/2600239.2600241.
+> Merkel, D. (2014). Docker: lightweight linux containers for consistent development and deployment. Linux Journal, 2014(239), 2. doi: 10.5555/2600239.2600241.
 
 - [Singularity](https://pubmed.ncbi.nlm.nih.gov/28494014/)
 
-  > Kurtzer GM, Sochat V, Bauer MW. Singularity: Scientific containers for mobility of compute. PLoS One. 2017 May 11;12(5):e0177459. doi: 10.1371/journal.pone.0177459. eCollection 2017. PubMed PMID: 28494014; PubMed Central PMCID: PMC5426675.
+> Kurtzer GM, Sochat V, Bauer MW. Singularity: Scientific containers for mobility of compute. PLoS One. 2017 May 11;12(5):e0177459. doi: 10.1371/journal.pone.0177459. eCollection 2017. PubMed PMID: 28494014; PubMed Central PMCID: PMC5426675.

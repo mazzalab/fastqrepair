@@ -43,11 +43,14 @@ First, prepare a samplesheet with your input data that looks as follows:
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
 mysampleA,sample_R1.fastq.gz,sample_R2.fastq.gz
-mysampleB,sample_R3.fastq.gz,sample_R4.fastq.gz
-mysampleC,sample_R5.fastq
+mysampleB,sample_R3.fq,sample_R4.fq
+mysampleC,sample_R5.fq.gz
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired-end). Rows with the same sample identifier are not allowed. Rows with different file extensions (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`) are not allowed.
+Each row represents a FASTQ file (single-end) or a pair of FASTQ files (paired-end).
+
+> [!WARNING]
+> Rows with different file extensions (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`) are not allowed.
 
 Now, you can run the pipeline using:
 
@@ -65,7 +68,7 @@ For more details and further functionality, please refer to the [usage documenta
 
 ## Pipeline output
 
-This pipeline produces clean and well-formed fastq files together with short textual reports of the cleaning actions.
+This pipeline produces clean and well-formed FASTQ files together with short textual reports of the cleaning actions.
 
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/fastqrepair/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
@@ -88,7 +91,6 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
 <!-- If you use nf-core/fastqrepair for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 

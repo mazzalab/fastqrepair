@@ -34,7 +34,8 @@
                     "type": "integer",
                     "default": 2,
                     "pattern": "^[1-9]\\d*$",
-                    "description": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
+                    "description": "FASTQ chunk numbers for parallel processing.",
+                    "help_text": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "qin": {
@@ -61,15 +62,16 @@
                 "publish_all_tools": {
                     "type": "boolean",
                     "default": false,
-                    "description": "To specify whether to publish all pipeline intermediate results to output directory.",
-                    "help_text": "This option tells the pipeline whether to publish all intermediate results in the output directory.",
+                    "description": "Publish intermediate results.",
+                    "help_text": "This option tells the pipeline to publish all intermediate results in the output directory.",
                     "fa_icon": "fas fa-copy",
                     "hidden": false
                 },
                 "repaired_folder": {
                     "type": "string",
                     "default": "repaired",
-                    "description": "Name of a subfolder of ${outdir} where the repaired files will be saved.",
+                    "description": "Directory containing the repaired files.",
+                    "help_text": "Name of a subfolder of the directory specified with --outdir where the repaired files will be saved.",
                     "fa_icon": "fas fa-folder-open",
                     "hidden": false
                 }
@@ -208,7 +210,8 @@
                 "multiqc_methods_description": {
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog"
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
                 },
                 "multiqc_replace_names": {
                     "type": "string",

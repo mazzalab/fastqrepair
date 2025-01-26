@@ -10,35 +10,21 @@ The nf-core/fastqrepair pipeline is built using [Nextflow](https://www.nextflow.
 
 ```
 <output folder>
-  - repaired/
+  - pipeline_info/
   - QC/
     - fastqc/
     - multiqc/
-  - pipeline_info/
+  - repaired/
 ```
 
 Where:
 
-<details markdown="1"><summary>Output folders</summary>
-
-- `repaired` folder contains repaired fastq files and relative quality reports by [Wipertools](#wipertools)
+- `pipeline_info` contains report metrics generated during the [workflow execution](#pipeline-information)
 - `QC` contains [FastQC](#fastqc) QC analysis results and [MultiQC](#multiqc) reports
-- **[pipeline_info](#pipeline-information)** contains report metrics generated during the workflow execution
-
-</details>
-
-### Wipertools
-
-[Wipertools](https://github.com/mazzalab/fastqwiper) is an ensemble method to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving.
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `repaired/`
-  - `mysampleA_R1_repaired.fastq.gz` and `mysampleA_R2_repaired.fastq.gz` are the repaired fastq files
-  - `mysampleA_R1_report.txt` and `mysampleA_R2_report.txt` are the summaries of the cleaning task
-
-</details>
+- `repaired` contains repaired fastq files and relative quality reports
+  - `repaired/`
+    - `mysampleA_R1.fastq.gz` and `mysampleA_R2.fastq.gz` are the repaired fastq files
+    - `mysampleA_R1.report` and `mysampleA_R2.report` are the summaries of the cleaning task
 
 ### FastQC
 

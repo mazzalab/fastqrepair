@@ -16,18 +16,6 @@ You will need to create a samplesheet that will be provided to `fastqrepair` as 
 
 The samplesheet will contain information about the samples you would like to analyse before running the pipeline. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
 
-### Multiple runs of the same sample
-
-> [!WARNING]
-> All `sample` identifiers in a samplesheet must be unique. It is not possible to have different `sample` identifiers that refer to the same file name.
-
-Below is an example of a samplesheet containing one paired-end sample:
-
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-mysampleA,sample_R1.fastq.gz,sample_R2.fastq.gz
-```
-
 ### Full samplesheet
 
 The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
@@ -37,17 +25,20 @@ A final samplesheet file consisting of both single- and paired-end data may look
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
 mysampleA,sample_1_R1.fastq.gz,sample_1_R2.fastq.gz
-mysampleB,sample_2_R1.fastq.gz,sample_2_R2.fastq.gz
-mysampleC,sample_3_R1.fastq.gz,
+mysampleB,sample_2_R1.fastq,sample_2_R2.fastq
+mysampleC,sample_3_R1.fq.gz,
 ```
 
-| Column    | Description                                                                                                                                  |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. Spaces in sample names are automatically converted to underscores (`_`).                                                 |
-| `fastq_1` | Full path to FastQ file for short reads R1. Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq".            |
-| `fastq_2` | Full path to FastQ file for short reads R2 (optional). Files can be gzipped or not, with the extensions: ".fastq.gz", ".fq.gz", or ".fastq". |
+| Column    | Description                                                                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`  | Custom sample name. Spaces in sample names are automatically converted to underscores (`_`).                                                        |
+| `fastq_1` | Full path to FASTQ file for short reads R1. Files can be gzipped or not, with the extensions: `.fastq.gz`, `.fastq`, `.fq.gz`, or `.fq`.            |
+| `fastq_2` | Full path to FASTQ file for short reads R2 (optional). Files can be gzipped or not, with the extensions: `.fastq.gz`, `.fastq`, `.fq.gz`, or `.fq`. |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+
+> [!WARNING]
+> Rows with different file extensions (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`) are not allowed.
 
 ## Running the pipeline
 
@@ -104,7 +95,7 @@ nextflow pull nf-core/fastqrepair
 
 It is a good idea to specify the pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
-First, go to the [nf-core/fastqrepair releases page](https://github.com/nf-core/fastqrepair/releases) and find the latest pipeline version - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`. Of course, you can switch to another version by changing the number after the `-r` flag.
+First, go to the [nf-core/fastqrepair releases page](https://github.com/nf-core/fastqrepair/releases) and find the latest pipeline version - numeric only (eg. `1.0.0`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.0.0`. Of course, you can switch to another version by changing the number after the `-r` flag.
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future. For example, at the bottom of the MultiQC reports.
 
