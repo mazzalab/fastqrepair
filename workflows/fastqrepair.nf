@@ -8,8 +8,6 @@ include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
 include { BBMAP_REPAIR            } from '../modules/nf-core/bbmap/repair/main'
 include { FASTQ_REPAIR_WIPERTOOLS } from '../subworkflows/local/fastq_repair_wipertools/main'
-include { COPYRESULTS             } from '../modules/local/copyresults'
-include { COPYREPORTS             } from '../modules/local/copyreports'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -34,7 +32,7 @@ workflow FASTQREPAIR {
     // branch .gz and non gz files
     ch_fastq_ext = Channel.empty()
     ch_samplesheet
-    | branch { map, fq ->
+    | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
         non_gz_files: true }
     | set { ch_fastq_ext }
@@ -114,26 +112,6 @@ workflow FASTQREPAIR {
     }
 
     //
-    // local MODULE: COPYRESULTS
-    //
-    collected_fastq = Channel.empty()
-    ch_final
-    | flatMap { meta, fastqList ->
-        fastqList instanceof List
-        ? fastqList.collect { fastq -> tuple(meta, fastq) }
-        : [tuple(meta, fastqList)]
-        }
-    | set { collected_fastq }
-
-    COPYRESULTS (
-        collected_fastq
-    )
-    FASTQ_REPAIR_WIPERTOOLS.out.report.view()
-    COPYREPORTS (
-        FASTQ_REPAIR_WIPERTOOLS.out.report
-    )
-
-    //
     // Assess QC of all fastq files (both single and paired end)
     //
     FASTQC ( ch_final )
@@ -144,9 +122,7 @@ workflow FASTQREPAIR {
     ch_versions = ch_versions.mix(
         GZRT.out.versions.first(),
         FASTQ_REPAIR_WIPERTOOLS.out.versions,
-        FASTQC.out.versions.first(),
-        COPYRESULTS.out.versions.first(),
-        COPYREPORTS.out.versions.first()
+        FASTQC.out.versions.first()
     )
 
     softwareVersionsToYAML(ch_versions)
