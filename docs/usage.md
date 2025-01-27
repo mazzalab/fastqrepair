@@ -38,7 +38,7 @@ mysampleC,sample_3_R1.fq.gz,
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 > [!WARNING]
-> Rows with different file extensions (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`) are not allowed.
+> Different file extensions are not allowed *in the same row*, i.e., in the same paired-end sample (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`)
 
 ## Running the pipeline
 

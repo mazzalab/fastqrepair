@@ -60,13 +60,13 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     | set { ch_gathered_report }
 
     // gather report files and replace meta.id with meta.sample_id
-    final_reports = Channel.empty()
+    ch_final_reports = Channel.empty()
     WIPERTOOLS_REPORTGATHER(
         ch_gathered_report
     )
     WIPERTOOLS_REPORTGATHER.out.gathered_report
     | map { meta, report -> [['id':meta.sample_id, 'single_end':meta.single_end], report]}
-    | set { final_reports }
+    | set { ch_final_reports }
 
     // gather versions
     ch_versions = Channel.empty()
@@ -79,6 +79,6 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
 
     emit:
     wiped_fastq = WIPERTOOLS_FASTQGATHER.out.gathered_fastq  // channel: [ val(meta), [ .fastq|.fastq.gz ] ]
-    report      = final_reports                              // channel: [ val(meta), [ .txt ] ]
+    report      = ch_final_reports                           // channel: [ val(meta), [ .txt ] ]
     versions    = ch_versions                                // channel: [ versions.yml ]
 }
