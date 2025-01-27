@@ -128,6 +128,7 @@ workflow FASTQREPAIR {
     COPYRESULTS (
         collected_fastq
     )
+    FASTQ_REPAIR_WIPERTOOLS.out.report.view()
     COPYREPORTS (
         FASTQ_REPAIR_WIPERTOOLS.out.report
     )

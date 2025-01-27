@@ -17,6 +17,7 @@ process COPYRESULTS {
     """
     # Extract the base name without path or extension
     base_name_fastq=\$(basename "$repaired_fastq" .fastq.gz)
+    base_name_fastq=\${base_name_fastq#"$meta.id"}
 
     # Check if _1_ or _2_ is in the fastq filename
     if [[ "\$base_name_fastq" == *_1_* ]]; then

@@ -17,14 +17,16 @@ The nf-core/fastqrepair pipeline is built using [Nextflow](https://www.nextflow.
   - repaired/
 ```
 
-Where:
+<details markdown="1">
+<summary>Folders content</summary>
 
 - `pipeline_info` contains report metrics generated during the [workflow execution](#pipeline-information)
 - `QC` contains [FastQC](#fastqc) QC analysis results and [MultiQC](#multiqc) reports
 - `repaired` contains repaired fastq files and relative quality reports
-  - `repaired/`
-    - `mysampleA_R1.fastq.gz` and `mysampleA_R2.fastq.gz` are the repaired fastq files
-    - `mysampleA_R1.report` and `mysampleA_R2.report` are the summaries of the cleaning task
+  - `mysampleA_R1.fastq.gz` and `mysampleA_R2.fastq.gz` are the repaired fastq files
+  - `mysampleA_R1.report` and `mysampleA_R2.report` are the summaries of the cleaning task
+
+</details>
 
 ### FastQC
 

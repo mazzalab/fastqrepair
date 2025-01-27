@@ -17,6 +17,7 @@ process COPYREPORTS {
     """
     # Extract the base name without path or extension
     base_name_report=\$(basename "$report" .report)
+    base_name_report=\${base_name_report#"$meta.id"}
 
     # Check if _1_ or _2_ is in the report filename
     if [[ "\$base_name_report" == *_1_* ]]; then
