@@ -1,0 +1,40 @@
+nextflow_pipeline {
+
+    name "Test fastqrepair pipeline"
+    script "../main.nf"
+
+    tag "pipeline"
+    tag "fastqrepair"
+
+    test("30 paired-end reads, two FASTQ are empty") {
+
+        when {
+            params {
+                input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_30reads.csv'
+                outdir                  = "$outputDir/30reads"
+                repaired_folder         = "repaired"
+
+                publish_all_tools       = true
+                num_splits              = 2
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    path("$outputDir/30reads/${params.repaired_folder}").list(),
+                    path("$outputDir/30reads/${params.repaired_folder}/test_30reads_2_2.report"),
+                    path("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml"),
+                    ).match("30reads_final")
+                },
+                { assert path("$outputDir/30reads/${params.repaired_folder}").list().size() == 2 },
+                { assert new File("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml").exists() },
+                { assert new File("$outputDir/30reads/${params.repaired_folder}/test_30reads_2_2.fastq.gz").exists() },
+                { assert new File("$outputDir/30reads/${params.repaired_folder}/test_30reads_2_2.report").exists() },
+                { assert new File("$outputDir/30reads/${params.repaired_folder}/test_30reads_2_2.report").readLines()[0].contains("FASTQWIPER REPORT:") },
+                { assert new File("$outputDir/30reads/${params.repaired_folder}/test_30reads_2_2.report").readLines()[3].contains("96 (92.31%)") }
+            )
+        }
+    }
+}
