@@ -2,16 +2,16 @@
     "30reads_final": {
         "content": [
             [
-                "test_30reads_2_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
-                "test_30reads_2_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
+                "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
+                "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
             ],
-            "test_30reads_2_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
-            "nf-core_fastqrepair_versions.yml:md5,349c9f0712fbec2d8a766451b1b8a112"
+            "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
+            "nf-core_fastqrepair_versions.yml:md5,83bad2491a9235a94e56ef28bf85fce3"
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.3"
+            "nextflow": "24.10.4"
         },
-        "timestamp": "2025-01-25T20:00:29.301422"
+        "timestamp": "2025-01-27T20:39:55.021781"
     }
 }

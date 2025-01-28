@@ -66,14 +66,6 @@
                     "help_text": "This option tells the pipeline to publish all intermediate results in the output directory.",
                     "fa_icon": "fas fa-copy",
                     "hidden": false
-                },
-                "repaired_folder": {
-                    "type": "string",
-                    "default": "repaired",
-                    "description": "Directory containing the repaired files.",
-                    "help_text": "Name of a subfolder of the directory specified with --outdir where the repaired files will be saved.",
-                    "fa_icon": "fas fa-folder-open",
-                    "hidden": false
                 }
             }
         },
