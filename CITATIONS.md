@@ -20,7 +20,7 @@
 
 - [Wipertools](https://github.com/mazzalab/fastqwiper)
 
-> Mazza, T. (2025). Wipertools. [![DOI](https://zenodo.org/badge/325529896.svg)](https://doi.org/10.5281/zenodo.14176147){: style="float:right"}
+> MazzaLab, Tommaso Mazza, & Jose F Oviedo. (2025). mazzalab/fastqwiper: v1.1.5 (v1.1.5). Zenodo. [https://doi.org/10.5281/zenodo.14774039](https://doi.org/10.5281/zenodo.14774039)
 
 - [BBMap](http://sourceforge.net/projects/bbmap/)
 

@@ -9,6 +9,8 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     ch_fastq // channel: [ val(meta), [ .fastq ] ]
 
     main:
+    ch_versions = Channel.empty()
+
     // decouple fastq files [sample_id = id; id is the file name]
     ch_decoupled = ch_fastq.flatMap {
         meta, fastqList -> fastqList instanceof List
@@ -21,6 +23,7 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
         ch_decoupled,
         params.num_splits
     )
+    ch_versions = ch_versions.mix(WIPERTOOLS_FASTQSCATTER.out.versions.first())
 
     /* decouple chunks
     id          = the chunk file name
@@ -37,6 +40,7 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     WIPERTOOLS_FASTQWIPER {
         ch_scattered_fastq
     }
+    ch_versions = ch_versions.mix(WIPERTOOLS_FASTQWIPER.out.versions.first())
 
     // group wiped chunks
     ch_cleaned_fastq = Channel.empty()
@@ -50,6 +54,7 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     WIPERTOOLS_FASTQGATHER(
         ch_cleaned_fastq
     )
+    ch_versions = ch_versions.mix(WIPERTOOLS_FASTQGATHER.out.versions.first())
 
     // group wiping reports
     ch_gathered_report = Channel.empty()
@@ -64,18 +69,12 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     WIPERTOOLS_REPORTGATHER(
         ch_gathered_report
     )
+    ch_versions = ch_versions.mix(WIPERTOOLS_REPORTGATHER.out.versions.first())
+
     WIPERTOOLS_REPORTGATHER.out.gathered_report
     | map { meta, report -> [['id':meta.sample_id, 'single_end':meta.single_end], report]}
     | set { ch_final_reports }
 
-    // gather versions
-    ch_versions = Channel.empty()
-    ch_versions = ch_versions.mix(
-        WIPERTOOLS_FASTQSCATTER.out.versions.first(),
-        WIPERTOOLS_FASTQWIPER.out.versions.first(),
-        WIPERTOOLS_FASTQGATHER.out.versions.first(),
-        WIPERTOOLS_REPORTGATHER.out.versions.first()
-    )
 
     emit:
     wiped_fastq = WIPERTOOLS_FASTQGATHER.out.gathered_fastq  // channel: [ val(meta), [ .fastq|.fastq.gz ] ]

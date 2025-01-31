@@ -41,6 +41,7 @@ workflow FASTQREPAIR {
     // Recover corrupted gz files
     //
     GZRT (ch_fastq_ext.gz_files)
+    ch_versions = ch_versions.mix(GZRT.out.versions.first())
 
     // Join recovered gz files with non-gz files and filter empty files out
     ch_tobewiped_fastq = Channel.empty()
@@ -54,8 +55,7 @@ workflow FASTQREPAIR {
     // If all input files are empty, then skip the rest of the pipeline
     ch_tobewiped_fastq
     | ifEmpty {
-        error "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline."
-        // log.warn "No non-empty FASTQ files found. Skipping the rest of the pipeline."
+        log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline for ${meta.id}"
     }
 
     // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
@@ -69,13 +69,14 @@ workflow FASTQREPAIR {
         .set { subset_ids }
 
     all_ids.minus(subset_ids).subscribe{ id_list -> if (id_list.size > 0) log.warn "FASTQ files with the following meta.ids are empty: ${id_list.join(', ')}" }
-    //
 
     //
     // Make fastq compliant and wipe bad characters
     //
     ch_repaired_fastq = Channel.empty()
     FASTQ_REPAIR_WIPERTOOLS (ch_tobewiped_fastq)
+    ch_versions = ch_versions.mix(FASTQ_REPAIR_WIPERTOOLS.out.versions.first())
+
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
     | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | map { meta, fq -> [['id':meta.sample_id, 'single_end':meta.single_end], fq]}
@@ -89,14 +90,13 @@ workflow FASTQREPAIR {
     ch_repaired_fastq.paired_end
     | groupTuple
     | set { ch_repaired_fastq_paired_end }
-    //
 
-    //
     // Settle reads pairing (re-pair, optional)
     //
     if (!params.skip_bbmap_repair) {
         // Re-pair reads
         BBMAP_REPAIR (ch_repaired_fastq_paired_end, false)
+        ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
 
         ch_repaired_fastq_paired_end_singleton = Channel.empty()
         BBMAP_REPAIR.out.repaired
@@ -106,7 +106,6 @@ workflow FASTQREPAIR {
         | set { ch_repaired_fastq_paired_end_singleton }
 
         ch_final = ch_repaired_fastq_paired_end_singleton.concat(ch_repaired_fastq.single_end)
-        ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
     } else {
         ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
     }
@@ -115,15 +114,8 @@ workflow FASTQREPAIR {
     // Assess QC of all fastq files (both single and paired end)
     //
     FASTQC ( ch_final )
+    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
-    //
-    // Collate and save software versions
-    //
-    ch_versions = ch_versions.mix(
-        GZRT.out.versions.first(),
-        FASTQ_REPAIR_WIPERTOOLS.out.versions,
-        FASTQC.out.versions.first()
-    )
 
     softwareVersionsToYAML(ch_versions)
         .collectFile(
