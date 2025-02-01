@@ -25,6 +25,8 @@ nextflow_pipeline {
                     path("$outputDir/30reads/repaired").list(),
                     path("$outputDir/30reads/repaired/test_30reads_2.report"),
                     path("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml"),
+                    file("$outputDir/30reads/QC/multiqc/multiqc_report.html").exists(),
+                    file("$outputDir/30reads/QC/fastqc/test_30reads_2.fastqc.html").exists(),
                     ).match("30reads_final")
                 },
                 { assert path("$outputDir/30reads/repaired").list().size() == 2 },

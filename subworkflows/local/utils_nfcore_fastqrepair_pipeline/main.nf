@@ -214,11 +214,11 @@ def toolCitationText() {
 def toolBibliographyText() {
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
     def reference_text = [
-            "<li>Renn, A. M. (2013). The gzip Recovery Toolkit, URL: https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html</li>",
-            "<li>Mazza, T. (2024). FastqWiper, URL: https://github.com/mazzalab/fastqwiper</li>",
-            "<li>Bushnell B. (2024). BBMap, URL: http://sourceforge.net/projects/bbmap/</li>",
-            "<li>Andrews S, (2010). FastQC, URL: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)</li>",
-            "<li>Ewels P, Magnusson M, Lundin S, Käller M. (2016). MultiQC, URL: https://github.com/MultiQC/MultiQC</li>"
+            "<li>Renn, A. M. (2013). The gzip Recovery Toolkit [Online]</li>",
+            "<li>MazzaLab, Tommaso Mazza, & Jose F Oviedo. (2025). mazzalab/fastqwiper: v1.1.5 (v1.1.5). Zenodo, https://doi.org/10.5281/zenodo.14774039</li>",
+            "<li>Bushnell B. (2024). BBMap [Online]</li>",
+            "<li>Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online]</li>",
+            "<li>Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924</li>"
         ].join(' ').trim()
 
     return reference_text
