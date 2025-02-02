@@ -25,7 +25,7 @@ Deprecated
 | `BBmap`      |             | 39.13       |
 | `FastQC`     |             | 0.12.1      |
 | `gzrt`       |             | 0.9.1       |
-| `Wipertools` |             | 1.1.4       |
+| `Wipertools` |             | 1.1.5       |
 | `MultiQC`    |             | 1.26        |
 
 > **NB:** Dependency has been **updated** if both old and new version information is present.
