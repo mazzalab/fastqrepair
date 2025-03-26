@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## dev
+
+### `Changed`
+
+- [PR #18](https://github.com/nf-core/fastqrepair/pull/18) Updated the JSON schema to make input validation stricter, thus preventing more errors during the pipeline run.
+
 ## v[1.1.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0) - Trento YellowBlue [XX/YY/202Z]
 
 <!--
