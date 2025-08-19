@@ -20,17 +20,15 @@
 
 ## Introduction
 
-**nf-core/fastqrepair** is a bioinformatics pipeline that ...
+**nf-core/fastqrepair** is a bioinformatics pipeline that can be used to recover corrupted `FASTQ.gz` files, drop or fix uncompliant reads, remove unpaired reads, and settles reads that became disordered. It takes a `samplesheet` with FASTQ/FASTQ.gz files as input (both single-end and paired-end) and produces clean FASTQ files and QC reports.
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
+![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.png)
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
+2. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
+3. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
+4. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+5. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
 
 ## Usage
 
