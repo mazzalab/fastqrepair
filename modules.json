@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bbmap/repair": {
                         "branch": "master",
-                        "git_sha": "4c81a35b9f817661af684a50dec2a5a3eb297df2",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {
@@ -17,32 +17,32 @@
                     },
                     "gzrt": {
                         "branch": "master",
-                        "git_sha": "56f433b35062e2ca97f12d490fcc818107c33521",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
+                        "git_sha": "a4488d3d09244f29fb4606ba4eef85d59dcc6ad8",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqgather": {
                         "branch": "master",
-                        "git_sha": "256a6dd005be691eb34487e4d4c56368b2995d5a",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqscatter": {
                         "branch": "master",
-                        "git_sha": "256a6dd005be691eb34487e4d4c56368b2995d5a",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
                     "wipertools/fastqwiper": {
                         "branch": "master",
-                        "git_sha": "256a6dd005be691eb34487e4d4c56368b2995d5a",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
                     "wipertools/reportgather": {
                         "branch": "master",
-                        "git_sha": "256a6dd005be691eb34487e4d4c56368b2995d5a",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     }
                 }
