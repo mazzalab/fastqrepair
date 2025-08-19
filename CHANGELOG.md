@@ -3,13 +3,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## dev
+## v[1.1.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0) - Trento YellowBlue [19/08/2025]
+
+nf-core/tools v3.3.2 update
 
 ### `Changed`
+- [PR #22](https://github.com/nf-core/fastqrepair/pull/22) Template update for nf-core/tools v3.3.2.
 
-- [PR #18](https://github.com/nf-core/fastqrepair/pull/18) Updated the JSON schema to make input validation stricter, thus preventing more errors during the pipeline run.
-
-## v[1.1.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0) - Trento YellowBlue [XX/YY/202Z]
+Solve conflicts for: .editorconfig, CHANGELOG.md, README.md, assets/multiqc_config.yml, assets/schema_input.json, nextflow.config, nf-test.config, ro-crate-metadata.json, tests/nextflow.config
 
 <!--
 Added
@@ -18,7 +19,7 @@ Dependencies
 Deprecated
 -->
 
-## v[1.0.0](https://github.com/nf-core/fastqrepair/releases/tag/1.0.0) - Catanzaro YellowRed [04/02/2025]
+## v[1.0.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0dev) - Catanzaro YellowRed [04/02/2025]
 
 Initial release of nf-core/fastqrepair, created with the [nf-core](https://nf-co.re/) template.
 
