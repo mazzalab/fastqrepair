@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 nf-core/tools v3.3.2 update
 
 ### `Changed`
-- [PR #22](https://github.com/nf-core/fastqrepair/pull/22) Template update for nf-core/tools v3.3.2.
 
-Solve conflicts for: .editorconfig, CHANGELOG.md, README.md, assets/multiqc_config.yml, assets/schema_input.json, nextflow.config, nf-test.config, ro-crate-metadata.json, tests/nextflow.config
+- [PR #22](https://github.com/nf-core/fastqrepair/pull/22) - Template update for nf-core/tools v3.3.2. Solve conflicts for: .editorconfig, CHANGELOG.md, README.md, assets/multiqc_config.yml, assets/schema_input.json, nextflow.config, nf-test.config, ro-crate-metadata.json, tests/nextflow.config
+
+- [#17](https://github.com/nf-core/fastqrepair/issues/17) - Improved nextflow_schema.json setting a minimum of 1 split to `num_splits` and remnoving a regex
 
 <!--
 Added
