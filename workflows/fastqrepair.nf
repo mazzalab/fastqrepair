@@ -55,16 +55,16 @@ workflow FASTQREPAIR {
     // If all input files are empty, then skip the rest of the pipeline
     ch_tobewiped_fastq
     | ifEmpty {
-        log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline for ${meta.id}"
+        log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline!"
     }
 
     // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
-    ch_samplesheet.map { meta, _ -> meta.id }
+    ch_samplesheet.map { meta, _fastq -> meta.id }
         .collect()
         .set { all_ids }
 
     // Extract meta.id from ch_subset and collect into a list
-    ch_tobewiped_fastq.map { meta, _ -> meta.id }
+    ch_tobewiped_fastq.map { meta, _fastq -> meta.id }
         .collect()
         .set { subset_ids }
 

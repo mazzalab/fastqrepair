@@ -151,9 +151,6 @@ workflow PIPELINE_COMPLETION {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-import java.util.zip.GZIPInputStream
-import java.nio.file.Path
-import java.nio.file.Files
 
 //
 // Validate channels from input samplesheet
@@ -176,7 +173,7 @@ def validateInputSamplesheet(input) {
 def validateConcordantExtensionsInSamplesheet(samplesheet) {
     // Collect the sample IDs of problematic entries
     def wrong_samples = samplesheet.filter { meta, fastq -> !meta.single_end && fastq[0] && fastq[1] && fastq[0].extension != fastq[1].extension }
-    wrong_samples.subscribe { meta, fastq -> error("Please check input samplesheet -> Paired-end fastq files must have the same extension for ${meta.id}") }
+    wrong_samples.subscribe { meta, _fastq -> error("Please check input samplesheet -> Paired-end fastq files must have the same extension for ${meta.id}") }
 }
 
 //
@@ -184,13 +181,15 @@ def validateConcordantExtensionsInSamplesheet(samplesheet) {
 //
 def isFastqFileEmpty(Path fastqFilePath) {
     if (fastqFilePath.toString().endsWith('.gz')) {
-        try (GZIPInputStream gis = new GZIPInputStream(Files.newInputStream(fastqFilePath))) {
+        java.util.zip.GZIPInputStream gis = null
+        try{
+            gis = new java.util.zip.GZIPInputStream(java.nio.file.Files.newInputStream(fastqFilePath))
             return gis.read() == -1
         } catch (IOException e) {
             throw new RuntimeException("Error reading gzipped file: ${fastqFilePath}", e)
         }
     } else {
-        return Files.size(fastqFilePath) == 0 || Files.size(fastqFilePath) == -1
+        return java.nio.file.Files.size(fastqFilePath) == 0 || java.nio.file.Files.size(fastqFilePath) == -1
     }
 }
 
