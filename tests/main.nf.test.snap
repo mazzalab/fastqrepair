@@ -2,7 +2,7 @@
     "30reads_final": {
         "content": [
             [
-                "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
+                "test_30reads_2.fastq.gz:md5,7ff02baccc157b8cb2fc70cad4d123cb",
                 "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
             ],
             "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
@@ -14,6 +14,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-08-19T13:58:00.99195621"
+        "timestamp": "2025-08-20T14:36:49.022537801"
     }
 }
