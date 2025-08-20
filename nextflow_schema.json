@@ -32,7 +32,7 @@
                 "num_splits": {
                     "type": "integer",
                     "default": 2,
-                    "pattern": "^[1-9]\\d*$",
+                    "minimum": 1,
                     "description": "FASTQ chunk numbers for parallel processing.",
                     "help_text": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
                     "fa_icon": "fas fa-puzzle-piece"
