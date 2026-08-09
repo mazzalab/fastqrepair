@@ -9,7 +9,7 @@
                             "sample_id": "test",
                             "single_end": false
                         },
-                        "test_1_gather.fastq.gz:md5,78c6c714517ba544d9b9bd0f6336be7f"
+                        "test_1_gather.fastq.gz:md5,4161df271f9bfcd25d5845a1e220dbec"
                     ],
                     [
                         {
@@ -17,7 +17,7 @@
                             "sample_id": "test",
                             "single_end": false
                         },
-                        "test_2_gather.fastq.gz:md5,afb9db2518dc58baff14e7ad2244a7a2"
+                        "test_2_gather.fastq.gz:md5,2ebae722295ea66d84075a3b042e2b42"
                     ]
                 ],
                 "1": [
@@ -71,7 +71,7 @@
                             "sample_id": "test",
                             "single_end": false
                         },
-                        "test_1_gather.fastq.gz:md5,78c6c714517ba544d9b9bd0f6336be7f"
+                        "test_1_gather.fastq.gz:md5,4161df271f9bfcd25d5845a1e220dbec"
                     ],
                     [
                         {
@@ -79,12 +79,12 @@
                             "sample_id": "test",
                             "single_end": false
                         },
-                        "test_2_gather.fastq.gz:md5,afb9db2518dc58baff14e7ad2244a7a2"
+                        "test_2_gather.fastq.gz:md5,2ebae722295ea66d84075a3b042e2b42"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-09T11:21:35.609127924",
+        "timestamp": "2026-08-09T12:06:25.197086662",
         "meta": {
             "nf-test": "0.9.4",
             "nextflow": "25.10.4"
