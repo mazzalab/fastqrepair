@@ -121,7 +121,6 @@ workflow FASTQREPAIR {
     // Assess QC of all fastq files (both single and paired end)
     //
     FASTQC ( ch_final )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
     //
