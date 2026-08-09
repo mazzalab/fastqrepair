@@ -12,7 +12,7 @@
                     "wipertools fastqscatter": "1.0.3"
                 },
                 "Workflow": {
-                    "nf-core/fastqrepair": "v1.1.0dev"
+                    "nf-core/fastqrepair": "v1.1.1"
                 }
             },
             [
@@ -112,7 +112,7 @@
                 "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
             ]
         ],
-        "timestamp": "2026-08-09T11:51:52.565740596",
+        "timestamp": "2026-08-09T12:11:30.580880769",
         "meta": {
             "nf-test": "0.9.4",
             "nextflow": "25.10.4"
