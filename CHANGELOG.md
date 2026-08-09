@@ -3,6 +3,21 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.1.0dev - [unreleased]
+
+nf-core/tools v4.0.3 update
+
+### `Changed`
+
+- Template update for nf-core/tools v4.0.3 (supersedes the pending v3.4.1, v3.5.1 and v4.0.2 template merges). Conflicts resolved in: `.github/PULL_REQUEST_TEMPLATE.md`, `.gitignore`, `README.md`, `modules.json`, `modules/nf-core/multiqc/*`, `nextflow.config`, `ro-crate-metadata.json`, `subworkflows/local/utils_nfcore_fastqrepair_pipeline/main.nf`, `tests/nextflow.config`, `workflows/fastqrepair.nf`
+- Minimum Nextflow version raised to `25.10.4`; `nf-schema` bumped to `2.5.1`; `MultiQC` bumped to `1.34`
+- `FASTQREPAIR` now takes `multiqc_config`, `multiqc_logo`, `multiqc_methods_description` and `outdir` as explicit workflow inputs, and collates software versions through the `versions` channel topic
+
+### `Removed`
+
+- `--hook_url` parameter and the Slack/Microsoft Teams notification assets (`assets/slackreport.json`, `assets/adaptivecard.json`), dropped by the template
+- `gitpod` profile and `.gitpod.yml`; the `arm` profile is replaced by `arm64` plus `emulate_amd64`
+
 ## v[1.1.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0) - Trento YellowBlue [19/08/2025]
 
 nf-core/tools v3.3.2 update
