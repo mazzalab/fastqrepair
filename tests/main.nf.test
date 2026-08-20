@@ -24,13 +24,13 @@ nextflow_pipeline {
                 { assert snapshot(
                     path("$outputDir/repaired").list(),
                     path("$outputDir/repaired/test_30reads_2.report"),
-                    path("$outputDir/pipeline_info/nf-core_fastqrepair_versions.yml"),
+                    path("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml"),
                     file("$outputDir/QC/multiqc/multiqc_report.html").exists(),
                     file("$outputDir/QC/fastqc/test_30reads_2.fastqc.html").exists(),
                     ).match("30reads_final")
                 },
                 { assert path("$outputDir/repaired").list().size() == 2 },
-                { assert new File("$outputDir/pipeline_info/nf-core_fastqrepair_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml").exists() },
                 { assert new File("$outputDir/repaired/test_30reads_2.fastq.gz").exists() },
                 { assert new File("$outputDir/repaired/test_30reads_2.report").exists() },
                 { assert new File("$outputDir/repaired/test_30reads_2.report").readLines()[0].contains("FASTQWIPER REPORT:") },
