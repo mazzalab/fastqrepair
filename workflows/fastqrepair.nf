@@ -34,10 +34,10 @@ workflow FASTQREPAIR {
     def ch_versions = channel.empty()
     def ch_multiqc_files = channel.empty()
 
-    ch_final = Channel.empty()      // channel: repaired fastq files
+    ch_final = channel.empty()      // channel: repaired fastq files
 
     // branch .gz and non gz files
-    ch_fastq_ext = Channel.empty()
+    ch_fastq_ext = channel.empty()
     ch_samplesheet
     | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
@@ -51,7 +51,7 @@ workflow FASTQREPAIR {
     ch_versions = ch_versions.mix(GZRT.out.versions.first())
 
     // Join recovered gz files with non-gz files and filter empty files out
-    ch_tobewiped_fastq = Channel.empty()
+    ch_tobewiped_fastq = channel.empty()
     GZRT.out.recovered
     | concat ( ch_fastq_ext.non_gz_files )
     | filter { meta, fileList -> meta.single_end
@@ -80,20 +80,20 @@ workflow FASTQREPAIR {
     //
     // Make fastq compliant and wipe bad characters
     //
-    ch_repaired_fastq = Channel.empty()
+    ch_repaired_fastq = channel.empty()
     FASTQ_REPAIR_WIPERTOOLS (ch_tobewiped_fastq)
     ch_versions = ch_versions.mix(FASTQ_REPAIR_WIPERTOOLS.out.versions.first())
 
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
     | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | map { meta, fq -> [['id':meta.sample_id, 'single_end':meta.single_end], fq]}
-    | branch {
-        single_end: it[0].single_end == true
-        paired_end: it[0].single_end == false }
+    | branch { item ->
+        single_end: item[0].single_end == true
+        paired_end: item[0].single_end == false }
     | set { ch_repaired_fastq }
 
     // Group paired-reads by 'sample_id' and rename keys
-    ch_repaired_fastq_paired_end = Channel.empty()
+    ch_repaired_fastq_paired_end = channel.empty()
     ch_repaired_fastq.paired_end
     | groupTuple
     | set { ch_repaired_fastq_paired_end }
@@ -105,7 +105,7 @@ workflow FASTQREPAIR {
         BBMAP_REPAIR (ch_repaired_fastq_paired_end, false)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
 
-        ch_repaired_fastq_paired_end_singleton = Channel.empty()
+        ch_repaired_fastq_paired_end_singleton = channel.empty()
         BBMAP_REPAIR.out.repaired
         | concat ( BBMAP_REPAIR.out.singleton )
         | groupTuple
